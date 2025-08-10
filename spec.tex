@@ -1,0 +1,211 @@
+% !TeX program = lualatex
+
+%%--------------------------------------------------
+%% document configuration
+\documentclass[paper=a4,chapterprefix=true,10pt,oneside]{scrbook}
+\usepackage{imakeidx}
+\usepackage{hyperref}
+\usepackage{lettrine} % for dropped capital letters at chapter starts
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{makecell} % for "\makecell"
+\usepackage{parskip}  % handle non-indented paragraphs "properly"
+\usepackage{geometry} % adjust page margins
+\usepackage{fontspec} % for "luaotfload"
+\usepackage{caption}  % for customizing captions
+\usepackage{float}    % for the 'H' table descriptor
+\usepackage{pgfkeys}  % for defining custom environments with key=value options
+\usepackage{ifthen}
+\usepackage{amsmath}
+\usepackage[active,header=false,handles=false,copydocumentclass=false,generate=std-gram.ext,extract-cmdline={gramSec},extract-env={bnf}]{extract} % for grammar extraction
+
+% Setup font fallbacks.
+\directlua{
+  luaotfload.add_fallback(
+    "FallbackFonts",
+    {
+      "Noto Sans Math:mode=harf;",
+      "Noto Sans Symbols:mode=harf;",
+    }
+  )
+}
+
+% Set main font.
+\setmainfont{Noto Serif}[RawFeature={fallback=FallbackFonts}]
+\setromanfont{Noto Serif}[RawFeature={fallback=FallbackFonts}]
+\setsansfont{Noto Sans}[RawFeature={fallback=FallbackFonts}]
+\setmonofont{Noto Sans Mono}[RawFeature={fallback=FallbackFonts}]
+
+% Customize code listings.
+\lstset{
+  basicstyle=\ttfamily\normalsize,
+  showstringspaces=false,
+  xleftmargin=\leftmargini,
+  upquote=true,
+  escapechar=@,
+}
+
+% Define custom spacing command for listings.
+% This command is injectd wherever blank listing lines are found.
+% It is used to shrink the line height so blank lines take up less vertical space.
+\newcommand{\blankline}{\vspace{-0.4\baselineskip}}
+
+% Define a new reference command to format references with the "§" character.
+% A new command is needed because the hyperref package plays interacts with
+% the \ref command in a such a way that prevents \ref from being redefined.
+\newcommand{\partref}[1]{%
+  \hyperref[#1]{(\S\ref{#1})}%
+}
+
+% Bold the table headers.
+\renewcommand\theadfont{\bfseries}
+
+% Set margins using the geometry package.
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+%%--------------------------------------------------
+%% BNF grammar extraction.
+
+% Define the key-value options.
+\pgfkeys{
+  /bnf/.is family,
+  /bnf/term/.initial=missing,
+  /bnf/oneof/.initial=false,
+  /bnf/noref/.initial=false
+}
+
+% Define the base environment for BNF grammar.
+\NewDocumentEnvironment{bnfbase}{ O{term=missing,oneof=false,noref=false} m }
+{%
+  % Set keys using pgfkeys
+  \pgfkeys{/bnf/.cd,#1}%
+  % Check if "one of" should be in the production name.
+  \ifthenelse{\equal{\pgfkeysvalueof{/bnf/oneof}}{true}}%
+    {\newcommand{\oneof}{~~~one~of}}
+    {\newcommand{\oneof}{}}
+  % Retrieve the label name
+  \edef\mylabel{\pgfkeysvalueof{/bnf/term}}%
+  % Start of the environment content.
+  \begin{table}[H]
+  \captionsetup{justification=raggedright,labelformat=empty,skip=0pt}
+  \caption{\hspace{\leftmargini}\parbox{\textwidth}{\terminal{\pgfkeysvalueof{/bnf/term}::}\oneof}}%
+  % Check if "one of" should be in the production name.
+  \ifthenelse{\equal{\pgfkeysvalueof{/bnf/noref}}{true}}%
+    {}
+    {\label{grammar:\mylabel}}
+  \hspace{2\leftmargini}
+  \begin{tabular}{@{}#2}
+}{%
+  \end{tabular}
+  \end{table}
+  \vspace{-\baselineskip}
+}
+
+% The BNF environment will be placed in the appendex of the spec.
+\NewDocumentEnvironment{bnf}{ O{term=missing,oneof=false} m }
+{%
+  \begin{bnfbase}[#1,noref=false]{#2}
+}{%
+  \end{bnfbase}
+}
+
+% This environment will NOT be placed in the appendex of the spec.
+\NewDocumentEnvironment{bnfnoindex}{ O{term=missing,oneof=false} m }
+{%
+  \begin{bnfbase}[#1,noref=true]{#2}
+}{%
+  \end{bnfbase}
+}
+
+%%--------------------------------------------------
+%% BNF environments.
+\newcommand{\BnfNontermshape}{\small\ttfamily\upshape}
+\newcommand{\BnfTermshape}{\sffamily\itshape}
+
+\newcommand{\grammarterm}[1]{{\BnfTermshape #1}}
+\newcommand{\terminal}[1]{{\BnfTermshape #1}}
+\newcommand{\optterminal}[1]{{\BnfTermshape #1$_{opt}$}}
+\newcommand{\nonterminal}[1]{{\BnfNontermshape #1}}
+
+%%--------------------------------------------------
+%% Grammar extraction.
+\def\gramSec[#1]#2{}
+
+\makeatletter
+\newcommand{\FlushAndPrintGrammar}{%
+\immediate\closeout\XTR@out%
+\immediate\openout\XTR@out=std-gram-dummy.tmp%
+\def\gramSec[##1]##2{\section[##1]{##2}}%
+\input{std-gram.ext}%
+}
+\makeatother
+
+%%--------------------------------------------------
+% create the index
+\makeindex[options=-s index.ist]
+
+%%--------------------------------------------------
+%% configuration
+\input{_specmeta.tex}
+\author{Henry G. Stratmann III}
+\date{} % omit date
+
+%%--------------------------------------------------
+%% start of document
+\begin{document}
+
+%%--------------------------------------------------
+%% title page
+\begin{titlepage}
+  \raggedleft
+  \vspace*{4in}
+
+  % Title
+  {\Huge\bfseries The Gear™ Programming Language, \par Version 1.0 \par}
+  \vspace{0.3in}
+
+  % Author
+  {\huge Official Language Specifiation \par}
+  \vspace{0.3in}
+
+  \vfill
+  {\textcopyright~Railgun Labs, LLC. All rights reserved. \par}
+\end{titlepage}
+
+%%--------------------------------------------------
+%% front matter
+\frontmatter
+
+%% Include table of contents. Do not list "Contents"
+%% within it (per ISO request) but do include a
+%% bookmark for it in the PDF.
+\phantomsection
+\tableofcontents
+
+%%--------------------------------------------------
+%% main body of the document
+\mainmatter
+\input{_spec.tex}
+
+%%--------------------------------------------------
+%% appendices
+\appendix
+\input{_specannex.tex}
+
+%%--------------------------------------------------
+%% grammar summary
+\chapter{Grammar summary}%
+\index{grammar}%
+\index{summary!syntax}%
+This summary of Gear grammar is intended to be an aid to comprehension.
+It is not an exact statement of the language.
+In particular, the grammar described here accepts a superset of valid Gear constructs.
+\FlushAndPrintGrammar
+
+%%--------------------------------------------------
+%% back matter
+\backmatter
+\printindex
+
+%%--------------------------------------------------
+\end{document}
