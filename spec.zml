@@ -711,7 +711,7 @@
       A type may be denoted by a @italic{type name}, if it has one, which must be followed by type arguments if the type is generic.
       A type may also be specified using a @italic{type literal}, which composes a type from existing types.
     @para >
-      TODO: Define what a "type error" is.
+      A type error occurs when a program construct cannot be assigned a type.
     @section(title: "Named types")
       @para >
         Named types are types declared with an @grammarterm{identifier}.
