@@ -264,43 +264,35 @@
             A @grammarterm{keyword} is an identifier-like sequence of characters that is reserved and cannot be used as an identifier.
           @grammar(term: "keyword", id: "table:keywords")
             @altset
-              @alt @quoted{alias}
+              @alt @quoted{abort}
               @alt @quoted{break}
               @alt @quoted{case}
-              @alt @quoted{class}
-              @alt @quoted{const}
-            @altset
-              @alt @quoted{continue}
               @alt @quoted{catch}
+              @alt @quoted{class}
+            @altset
+              @alt @quoted{const}
+              @alt @quoted{continue}
               @alt @quoted{default}
               @alt @quoted{defer}
               @alt @quoted{do}
             @altset
               @alt @quoted{else}
-              @alt @quoted{error}
+              @alt @quoted{extern}
               @alt @quoted{for}
               @alt @quoted{func}
               @alt @quoted{if}
             @altset
               @alt @quoted{in}
-              @alt @quoted{interface}
               @alt @quoted{module}
-              @alt @quoted{native}
               @alt @quoted{nil}
-            @altset
-              @alt @quoted{panic}
-              @alt @quoted{pub}
+              @alt @quoted{public}
               @alt @quoted{return}
-              @alt @quoted{struct}
-              @alt @quoted{switch}
             @altset
+              @alt @quoted{switch}
               @alt @quoted{try}
               @alt @quoted{use}
               @alt @quoted{var}
               @alt @quoted{while}
-          @para >
-            A @index{contextual keyword} is an identifier-like sequence of characters that provides a specific meaning in the code, but isn't reserved.
-            Gear only has one contextual keyword and that is the Low Line (U+005F) character.
       @section(title: "Operators and punctuators")
         @para >
           There are several kinds of operators and punctuators.
@@ -1023,6 +1015,7 @@
         Here @literal{try} is a unary operator.
       @grammar(term: "try-expression")
         @alt @quoted{try} @term{expression}
+        @alt @quoted{try} @quoted{!} @term{expression}
     @section(title: "Try-else")
       @para >
         Here a @literal{try-else} is a binary operation accepting two operands: the first expression which might error and the second expression which is returned if the function does here.
