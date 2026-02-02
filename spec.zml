@@ -264,34 +264,36 @@
             A @grammarterm{keyword} is an identifier-like sequence of characters that is reserved and cannot be used as an identifier.
           @grammar(term: "keyword", id: "table:keywords")
             @altset
-              @alt @quoted{abort}
               @alt @quoted{break}
               @alt @quoted{case}
               @alt @quoted{catch}
               @alt @quoted{class}
-            @altset
               @alt @quoted{const}
+            @altset
               @alt @quoted{continue}
               @alt @quoted{default}
               @alt @quoted{defer}
               @alt @quoted{do}
-            @altset
               @alt @quoted{else}
+            @altset
               @alt @quoted{extern}
               @alt @quoted{for}
               @alt @quoted{func}
               @alt @quoted{if}
-            @altset
               @alt @quoted{in}
+            @altset
               @alt @quoted{module}
               @alt @quoted{nil}
+              @alt @quoted{panic}
               @alt @quoted{public}
-              @alt @quoted{return}
+              @alt @quoted{raise}
             @altset
+              @alt @quoted{return}
               @alt @quoted{switch}
               @alt @quoted{try}
               @alt @quoted{use}
               @alt @quoted{var}
+            @altset
               @alt @quoted{while}
       @section(title: "Operators and punctuators")
         @para >
