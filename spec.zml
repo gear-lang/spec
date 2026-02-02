@@ -788,17 +788,10 @@
       @para >
         It is erroneous for the last @grammarterm{parameter} in @grammarterm{function-parameters} to omit a @grammarterm{type}.
         The function type @literal{(a,b:Int)} is valid, but @literal{(a:Int,b)} is erroneous.
-    @section(title: "Record types")
+    @section(title: "Object types")
       @para >
-        A record is a sequence of named elements, called fields, each of which has a name and a type.
-        A record can have functions associated with it called @index{member functions}.
-        A member function can optionally accept a @index{receiver} which is a parameter representing the instance of the record.
-    @section(title: "Union types")
-      @para >
-        TODO!
-    @section(title: "Intersection types")
-      @para >
-        TODO!
+        An object is a sequence of named elements, called fields, each of which has a name and a type.
+        An object can have functions associated with it called @index{methods}.
     @section(title: "Optional types")
       @para >
         An @grammarterm{optional type} is a type constructor that encapsulates the possibility of a value being present or absent.
@@ -854,16 +847,16 @@
           @li @italic{S} and @italic{T} have the same arity
           @li @italic{T@sub{P}} <: @italic{S@sub{P}}
           @li @italic{S@sub{R}} <: @italic{T@sub{R}}
-      @section(title: "Record types")
+      @section(title: "Object types")
         @para >
-          When a record type is a value type it must conform to the type compatibility rules for value types.
-          The remainder of this seciton defines type compatibility for when a record type is a reference type.
+          When an object type is a value type it must conform to the type compatibility rules for value types.
+          The remainder of this seciton defines type compatibility for when an object type is a reference type.
         @para >
-          A record type may be defined with members @latexmath{\\{m_1,m_2,\\ldots,m_n\\\}}.
+          An object type may be defined with members @latexmath{\\{m_1,m_2,\\ldots,m_n\\\}}.
           Let @latexmath{M=\\{m_1,m_2,\\ldots,m_n\\\}}.
-          Given a record type @italic{R} denote its members types with @latexmath{R_M}.
+          Given a object type @italic{R} denote its members types with @latexmath{R_M}.
         @para >
-          Formally, a record type @italic{T} can be substituted for another record type @italic{S} if all of the conditions apply:
+          Formally, an object type @italic{T} can be substituted for another object type @italic{S} if all of the conditions apply:
         @ul
           @li @italic{S@sub{M}} ⊆ @italic{T@sub{M}}
           @li @italic{S@sub{M}} ≡ @italic{T@sub{M}}
@@ -1025,11 +1018,10 @@
       @alt @term{expression} @quoted{?:} @term{expression}
     @grammar(term: "tertiary-expression", id: "tertiary-expression")
       @alt @term{expression} @quoted{?} @term{expression} @quoted{:} @term{expression}
-    @section(title: "Records")
+    @section(title: "Objects")
       @para >
-        Anonymous record types can be declared and instantiated using the @literal{class} keyword.
-        Member functions declared on an anonymous record type are always non-static.
-        Member functions implictly receive the record instance through the contextual keyword: Low Line (U+005F) character.
+        Anonymous objects types can be declared and instantiated using the @literal{class} keyword.
+        Methods implictly receive the object instance through the contextual keyword: Low Line (U+005F) character.
     @section(title: "Try")
       @para >
         Here @literal{try} is a unary operator.
