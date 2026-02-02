@@ -274,32 +274,28 @@
               @alt @quoted{catch}
               @alt @quoted{default}
               @alt @quoted{defer}
-              @alt @quoted{die}
-            @altset
               @alt @quoted{do}
+            @altset
               @alt @quoted{else}
               @alt @quoted{error}
               @alt @quoted{for}
               @alt @quoted{func}
-            @altset
-              @alt @quoted{func}
               @alt @quoted{if}
+            @altset
               @alt @quoted{in}
               @alt @quoted{interface}
               @alt @quoted{module}
-            @altset
               @alt @quoted{native}
               @alt @quoted{nil}
+            @altset
               @alt @quoted{panic}
               @alt @quoted{pub}
               @alt @quoted{return}
-            @altset
-              @alt @quoted{return}
               @alt @quoted{struct}
               @alt @quoted{switch}
+            @altset
               @alt @quoted{try}
               @alt @quoted{use}
-            @altset
               @alt @quoted{var}
               @alt @quoted{while}
           @para >
