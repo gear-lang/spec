@@ -266,85 +266,116 @@ Comments are not processed within string literals.
 
 }
 
+##section[id: "tokens"]{Tokens}
+%index[term: "tokens"]{
 
-      @section(title: "Tokens",id: "tokens")
-        @index(term: "tokens")
-          @para >
-            A @grammarterm{lexical token} is a string with an assigned meaning.
-            In Gear there are several kinds of tokens: identifiers, keywords, @footnote(desc: "Literals include strings and numeric literals."){literals}, operators, and terminators.
-            White space and comments are not tokens, though they act as separators for tokens.
-          @para >
-            Token matching is @italic{greedy} which means the longest token that can be matched is matched.
-            That means given the token stream @literal{+=} the operator is matched as-is in its entirety; it is @italic{not} matched as two individual @literal{+} and @literal{=} tokens.
-          @grammar(term: "token")
-            @alt @term{identifier}
-            @alt @term{keyword}
-            @alt @term{operator-or-punctuator}
-            @alt @term{literal}
-            @alt @term{terminator}
-            @alt @term{control-statement}
-      @section(title: "Identifiers")
-        @index(term: "identifiers")
-          ;; The grammar for identifiers is derived from UAX 31.
-          ;; Only identifiers should be normalized because mandating that the entire source file
-          ;; be normalized could alter the contents of strings which in turn could alter the
-          ;; functionality of a program in unexpected ways.
-          @para >
-            An identifier is an arbitrarily long sequence of letters, ideographs, and digits.
-            Identifiers are @italic{case sensitive}, that is, uppercase and lowercase letters are considered distinct.
-            Identifiers are considered equivalent if they are @italic{canonically equivalent} as described by UAX #15.
-          @para >
-            The character properties @literal{XID_Start} and @literal{XID_Continue} are @italic{Derived Core Properties} as described by UAX #44.
-          @grammar(term: "identifier")
-            @alt @term{identifier-start} @term{identifier-continue-sequence}
-          @grammar(term: "identifier-start")
-            @alt @nobreak{any Unicode character with property @literal{XID_Start}}
-            @alt @term{low-line-character}
-          @grammar(term: "identifier-continue")
-            @alt @nobreak{any Unicode character with property @literal{XID_Continue}}
-            @alt @term{low-line-character}
-          @grammar(term: "identifier-continue-sequence")
-            @alt @term{identifier-continue}
-            @alt @term{identifier-continue} @term{identifier-continue-sequence}
-          @grammar(term: "low-line-character")
-            @alt @nobreak{the Unicode character @literal{U+005F}}
-      @section(title: "Keywords")
-        @index(term: "keyword")
-          @para >
-            A @grammarterm{keyword} is an identifier-like sequence of characters that is reserved and cannot be used as an identifier.
-          @grammar(term: "keyword", id: "table:keywords")
-            @altset
-              @alt @quoted{break}
-              @alt @quoted{case}
-              @alt @quoted{catch}
-              @alt @quoted{class}
-              @alt @quoted{const}
-            @altset
-              @alt @quoted{continue}
-              @alt @quoted{default}
-              @alt @quoted{defer}
-              @alt @quoted{do}
-              @alt @quoted{else}
-            @altset
-              @alt @quoted{extern}
-              @alt @quoted{for}
-              @alt @quoted{func}
-              @alt @quoted{if}
-              @alt @quoted{in}
-            @altset
-              @alt @quoted{module}
-              @alt @quoted{nil}
-              @alt @quoted{panic}
-              @alt @quoted{public}
-              @alt @quoted{raise}
-            @altset
-              @alt @quoted{return}
-              @alt @quoted{switch}
-              @alt @quoted{try}
-              @alt @quoted{use}
-              @alt @quoted{var}
-            @altset
-              @alt @quoted{while}
+A @grammarterm{lexical token} is a string with an assigned meaning.
+In Gear there are several kinds of tokens: identifiers, keywords, @footnote(desc: "Literals include strings and numeric literals."){literals}, operators, and terminators.
+White space and comments are not tokens, though they act as separators for tokens.
+
+Token matching is @italic{greedy} which means the longest token that can be matched is matched.
+That means given the token stream @literal{+=} the operator is matched as-is in its entirety; it is @italic{not} matched as two individual @literal{+} and @literal{=} tokens.
+
+%grammar(term: "token"){
+    %alt{@term{identifier}}
+    %alt{@term{keyword}}
+    %alt{@term{operator-or-punctuator}}
+    %alt{@term{literal}}
+    %alt{@term{terminator}}
+    %alt{@term{control-statement}}
+}
+
+}
+
+##section{Identifiers}
+%index[term: "identifiers]{
+
+!| The grammar for identifiers is derived from UAX 31.
+!| Only identifiers should be normalized because mandating that the entire source file
+!| be normalized could alter the contents of strings which in turn could alter the
+!| functionality of a program in unexpected ways.
+
+An identifier is an arbitrarily long sequence of letters, ideographs, and digits.
+Identifiers are @italic{case sensitive}, that is, uppercase and lowercase letters are considered distinct.
+Identifiers are considered equivalent if they are @italic{canonically equivalent} as described by UAX #15.
+
+The character properties @literal{XID_Start} and @literal{XID_Continue} are @italic{Derived Core Properties} as described by UAX #44.
+
+%grammar[term: "identifier"]{
+    %alt{@term{identifier-start} @term{identifier-continue-sequence}}
+}
+
+%grammar[term: "identifier-start"]{
+    %alt{@nobreak{any Unicode character with property @literal{XID_Start}}}
+    %alt{@term{low-line-character}}
+}
+
+%grammar[term: "identifier-continue"]{
+    %alt{@nobreak{any Unicode character with property @literal{XID_Continue}}}
+    %alt{@term{low-line-character}}
+}
+
+%grammar[term: "identifier-continue-sequence"]{
+    %alt{@term{identifier-continue}}
+    %alt{@term{identifier-continue} @term{identifier-continue-sequence}}
+}
+
+%grammar[term: "low-line-character"]{
+    %alt{@nobreak{the Unicode character @literal{U+005F}}}
+}
+
+}
+
+##section{Keywords}
+%index[term: "keyword"]{
+
+A @grammarterm{keyword} is an identifier-like sequence of characters that is reserved and cannot be used as an identifier.
+
+%grammar[term: "keyword", id: "table:keywords"]{
+    %altset{
+        %alt{@quoted{break}}
+        %alt{@quoted{case}}
+        %alt{@quoted{catch}}
+        %alt{@quoted{class}}
+        %alt{@quoted{const}}
+    }
+    %altset{
+        %alt{@quoted{continue}}
+        %alt{@quoted{default}}
+        %alt{@quoted{defer}}
+        %alt{@quoted{do}}
+        %alt{@quoted{else}}
+    }
+    %altset{
+        %alt{@quoted{extern}}
+        %alt{@quoted{for}}
+        %alt{@quoted{func}}
+        %alt{@quoted{if}}
+        %alt{@quoted{in}}
+    }
+    %altset{
+        %alt{@quoted{module}}
+        %alt{@quoted{nil}}
+        %alt{@quoted{panic}}
+        %alt{@quoted{public}}
+        %alt{@quoted{raise}}
+    }
+    %altset{
+        %alt{@quoted{return}}
+        %alt{@quoted{switch}}
+        %alt{@quoted{try}}
+        %alt{@quoted{use}}
+        %alt{@quoted{var}}
+    }
+    %altset{
+        %alt{@quoted{while}}
+    }
+}
+
+}
+
+
+            
       @section(title: "Operators and punctuators")
         @para >
           There are several kinds of operators and punctuators.
