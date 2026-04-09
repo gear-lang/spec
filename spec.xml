@@ -44,12 +44,12 @@ For undated references, the latest edition of the referenced document (including
 
 <ul>
     <li>
-        The Unicode Consortium. Unicode Standard Annex, UAX #15, <italic>Unicode Normalization Forms</italic>[online].
-        Edited by Ken Whistler. Revision 54; issued for Unicode 15.1.0. 2023-08-12. Available at https://www.unicode.org/reports/tr15/tr15-54.html
+The Unicode Consortium. Unicode Standard Annex, UAX #15, <italic>Unicode Normalization Forms</italic>[online].
+Edited by Ken Whistler. Revision 54; issued for Unicode 15.1.0. 2023-08-12. Available at https://www.unicode.org/reports/tr15/tr15-54.html
     </li>
     <li>
-        The Unicode Consortium. Unicode Standard Annex, UAX #31, <italic>Unicode Identifiers and Syntax</italic>[online].
-        Edited by Mark Davis and Robin Leroy. Revision 39; issued for Unicode 15.1.0. 2023-09-01. Available at https://www.unicode.org/reports/tr31/tr31-39.html
+The Unicode Consortium. Unicode Standard Annex, UAX #31, <italic>Unicode Identifiers and Syntax</italic>[online].
+Edited by Mark Davis and Robin Leroy. Revision 39; issued for Unicode 15.1.0. 2023-09-01. Available at https://www.unicode.org/reports/tr31/tr31-39.html
     </li>
 </ul>
 
@@ -2593,7 +2593,6 @@ IdRes(id,ParentScope(scope)) &amp; \text{if } id \notin scope.
 </annex>
 
 <annex title="Implementation considerations">
-
 <para>
 The specification focuses on defining the expected behavior and observable outcomes of the Gear programming language.
 It specifies how Gear should operate from a functional and user-oriented perspective, but it does not prescribe the internal mechanisms or implementation details that achieve this behavior.
@@ -2674,7 +2673,7 @@ After constructing the complete token list, it can be iterated to remove tokens 
 The final list, including all tokens and associated diagnostics, can be analyized.
 </para>
 </section>
-
 </annex>
+
 </annexes>
 </document>
