@@ -374,10 +374,8 @@ def parse_args() -> int:
     args = Arguments()
     args = parser.parse_args(namespace=args)
 
-    fp = open(args.infile, "rb")
-    content = fp.read()
-
-    root = lxml.etree.fromstring(content)
+    root = lxml.etree.parse(args.infile)
+    root.xinclude()
     outfile, _ = os.path.splitext(os.path.basename(args.infile))
 
     with open(f"_{outfile}.tex", "w", encoding="utf-8") as out:

@@ -1,3 +1,5 @@
+XML_FILES := $(wildcard *.xml)
+
 default: spec.pdf
 
 spec.pdf: spec.tex _spec.tex
@@ -5,7 +7,7 @@ spec.pdf: spec.tex _spec.tex
 	makeindex spec.idx
 	lualatex spec.tex
 
-_spec.tex: spec.xml compile.py
+_spec.tex: compile.py $(XML_FILES)
 	python3 compile.py spec.xml
 
 clean:

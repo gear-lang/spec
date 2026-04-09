@@ -1,0 +1,30 @@
+<chapter title="Introduction">
+<index term="introduction">
+
+<para>
+This document specifies requirements for implementations of the Gear™ programming language version 1.0.
+It describes the representation of Gear programs, the syntax and constraints of the Gear language, and the restrictions and limits imposed by a conforming implementation of Gear.
+The specification does not describe the mechanism by which Gear is transformed into an executable program, the mechanism by which a Gear program is invoked, or the mechanism by which a host embedds Gear.
+</para>
+
+<para>
+The latest canonical version of the specification can be obtained from: https://gear-lang.org/.
+</para>
+
+<para>
+Defect reports for the specification should be filed on GitHub: https://github.com/gear-lang/spec/issues.
+</para>
+
+<para>
+This document is protected by copyright laws and contains material proprietary to Railgun Labs a limited liability company (LLC) incorporated in the United States of America.
+Railgun Labs grants a conditional copyright license to use and reproduce this unmodified specification for any purpose, without fee or royalty.
+No license to any patent, trademark or other intellectual property rights are granted under these terms.
+</para>
+
+<para>
+Gear™ is a trademark of Railgun Labs.
+All other product names, trademarks, and/or company names are used solely for identification and belong to their respective owners.
+</para>
+
+</index>
+</chapter>

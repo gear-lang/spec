@@ -1,0 +1,20 @@
+<chapter title="Normative references">
+
+<para>
+The following documents are referred to in the text in such a way that some or all of their content constitutes requirements of this document.
+For dated references, only the edition cited applies.
+For undated references, the latest edition of the referenced document (including any amendments) applies.
+</para>
+
+<ul>
+    <li>
+The Unicode Consortium. Unicode Standard Annex, UAX #15, <italic>Unicode Normalization Forms</italic>[online].
+Edited by Ken Whistler. Revision 54; issued for Unicode 15.1.0. 2023-08-12. Available at https://www.unicode.org/reports/tr15/tr15-54.html
+    </li>
+    <li>
+The Unicode Consortium. Unicode Standard Annex, UAX #31, <italic>Unicode Identifiers and Syntax</italic>[online].
+Edited by Mark Davis and Robin Leroy. Revision 39; issued for Unicode 15.1.0. 2023-09-01. Available at https://www.unicode.org/reports/tr31/tr31-39.html
+    </li>
+</ul>
+
+</chapter>
