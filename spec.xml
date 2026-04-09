@@ -1430,409 +1430,328 @@ id &amp; \text{if } id \in scope, \\
 IdRes(id,ParentScope(scope)) &amp; \text{if } id \notin scope.
 \end{cases}
 </latexbigmath>
-
 </section>
 </chapter>
 
-            <chapter title="Expressions">
-                <para>An expression specifies the computation of a value by applying operators and
-                    functions to operands.</para>
-                <section title="Assignment">
-                    <para>An <italic>assignment</italic> replaces the current value stored in a <grammarterm>
-                        identifier</grammarterm> with a new value specified by an <grammarterm>
-                        expression</grammarterm>. An assignment statement may assign a single value
-                        to a single variable, or multiple values to a matching number of variables.</para>
-                    <grammar term="assignment-expression">
-                        <alt>
-                            <term>identifier</term>
-                            <quoted>=</quoted>
-                            <term>expression</term>
-                        </alt>
-                    </grammar>
-                </section>
-                <section title="Operators">
-                    <para>Expressions are constructed from operands and operators. The operators of
-                        an expression indicate which operations to apply to the operands. Examples
-                        of operators include <literal>+</literal>, <literal>-</literal>, <literal>*</literal>,
-                        and <literal>/</literal>. Examples of operands include literals, fields,
-                        local variables, and expressions.</para>
-                    <para>There are three kinds of operators:</para>
-                    <ul>
-                        <li>Unary operators. The unary operators take one operand and use either
-                            prefix notation (such as <literal>-x</literal>) or postfix notation
-                            (such as <literal>x++</literal>).</li>
-                        <li>Binary operators. The binary operators take two operands and all use
-                            infix notation (such as <literal>x + y</literal>)</li>
-                        <li>Ternary operator. Only one ternary operator, <literal>?:</literal>,
-                            exists; it takes three operands and uses infix notation <literal>(c ? x
-                            : y)</literal>.</li>
-                    </ul>
-                    <para>The order of evaluation of operators in an expression is determined by the <italic>
-                        precedence</italic> and <italic>associativity</italic> of the operators.</para>
-                    <para>The order in which operands in an expression are evaluated, is left to
-                        right.</para>
-                    <para>Certain operators can be overloaded. Operator overloading permits
-                        user-defined operator implementations to be specified for operations where
-                        one or both of the operands are of a user-defined class or struct type.</para>
-                </section>
-                <section title="Operator precedence and associativity">
-                    <para>When an expression contains multiple operators, the <italic>precedence</italic>
-                        of the operators controls the order in which the individual operators are
-                        evaluated. The precedence of an operator is established by the definition of
-                        its associated grammar production.</para>
-                    <para>The following table summarizes all operators in order of precedence from
-                        highest to lowest:</para>
-                    <para>TODO: Insert precedence table!</para>
-                    <para>When an operand occurs between two operators with the same precedence, the <italic>
-                        associativity</italic> of the operators controls the order in which the
-                        operations are performed. All operators are <italic>left-associative</italic>,
-                        meaning that operations are performed from left to right.</para>
-                    <para>Precedence and associativity can be controlled using parentheses.</para>
-                    <example>The expression <literal>x + y * z</literal> first multiplies <literal>y</literal>
-                        by <literal>z</literal> and then adds the result to <literal>x</literal>,
-                        but <literal>(x + y) * z</literal> first adds <literal>x</literal> and <literal>
-                        y</literal> and then multiplies the result by <literal>z</literal>.</example>
-                </section>
-                <section title="Primary expressions">
-                    <para>Primary expressions include every form of expression.</para>
-                    <grammar term="primary-expression">
-                        <alt>
-                            <term>expression</term>
-                        </alt>
-                        <alt>
-                            <term>record-creation-expression</term>
-                        </alt>
-                    </grammar>
-                    <grammar term="expression">
-                        <alt>
-                            <term>literal</term>
-                        </alt>
-                        <alt>
-                            <term>simple-name</term>
-                        </alt>
-                        <alt>
-                            <term>member-access</term>
-                        </alt>
-                        <alt>
-                            <term>invocation-expression</term>
-                        </alt>
-                    </grammar>
-                    <para>Primary expressions are divided between <grammarterm>expressions</grammarterm>
-                        and <grammarterm>record-creation-expressions</grammarterm>. Treating <grammarterm>
-                        record-creation-expression</grammarterm> in this way, rather than listing it
-                        along with the other expression forms, enables the grammar to disallow
-                        potentially confusing code such as</para>
-                    <code>if x {
-                        }
-</code>
-                    <para>which could be interpreted as an “if” statement with a conditional <literal>
-                        x</literal> and an empty <ref id="block">block</ref> or as an incomplete
-                        “if” statement where the condition expression constructs a record named <literal>
-                        x</literal> with default field initialization.</para>
-                </section>
-                <grammar term="assignment-operator" id="assignment-operator">
-                    <altset>
-                        <alt>
-                            <quoted>=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>+=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>-=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>*=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>/=</quoted>
-                        </alt>
-                    </altset>
-                    <altset>
-                        <alt>
-                            <quoted>|=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>&lt;&lt;=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>&gt;&gt;=</quoted>
-                        </alt>
-                        <alt>
-                            <quoted>^=</quoted>
-                        </alt>
-                    </altset>
-                </grammar>
-                <grammar term="expression" id="expression">
-                    <alt>
-                        <term>unary-expression</term>
-                    </alt>
-                    <alt>
-                        <term>binary-expression</term>
-                    </alt>
-                    <alt>
-                        <term>tertiary-expression</term>
-                    </alt>
-                </grammar>
-                <grammar term="unary-expression" id="unary-expression">
-                    <alt>
-                        <quoted>+</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <quoted>-</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <quoted>~</quoted>
-                        <term>expression</term>
-                    </alt>
-                </grammar>
-                <grammar term="binary-expression" id="binary-expression">
-                    <alt>
-                        <term>expression</term>
-                        <quoted>+</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>-</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>*</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>/</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>||</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>&lt;&lt;</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>&gt;&gt;</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>|</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>^</quoted>
-                        <term>expression</term>
-                    </alt>
-                    <alt>
-                        <term>expression</term>
-                        <quoted>?:</quoted>
-                        <term>expression</term>
-                    </alt>
-                </grammar>
-                <grammar term="tertiary-expression" id="tertiary-expression">
-                    <alt>
-                        <term>expression</term>
-                        <quoted>?</quoted>
-                        <term>expression</term>
-                        <quoted>:</quoted>
-                        <term>expression</term>
-                    </alt>
-                </grammar>
-                <section title="Objects">
-                    <para>Anonymous objects types can be declared and instantiated using the <literal>
-                        class</literal> keyword. Methods implictly receive the object instance
-                        through the contextual keyword: Low Line (U+005F) character.</para>
-                </section>
-                <section title="Try">
-                    <para>Here <literal>try</literal> is a unary operator.</para>
-                    <grammar term="try-expression">
-                        <alt>
-                            <quoted>try</quoted>
-                            <term>expression</term>
-                        </alt>
-                        <alt>
-                            <quoted>try</quoted>
-                            <quoted>!</quoted>
-                            <term>expression</term>
-                        </alt>
-                    </grammar>
-                </section>
-                <section title="Try-else">
-                    <para>Here a <literal>try-else</literal> is a binary operation accepting two
-                        operands: the first expression which might error and the second expression
-                        which is returned if the function does here.</para>
-                    <grammar term="try-else-expr">
-                        <alt>
-                            <quoted>try</quoted>
-                            <term>expression</term>
-                            <quoted>else</quoted>
-                            <term>expression</term>
-                        </alt>
-                    </grammar>
-                </section>
-                <section title="Catch">
-                    <para>Here <literal>block</literal> will be entered if <grammarterm>expression</grammarterm>
-                        errors. If <literal>block</literal> does not return control and <grammarterm>
-                        expression</grammarterm> errors, then <literal>nil</literal> is returned.</para>
-                    <grammar term="catch-expr">
-                        <alt>
-                            <term>expression</term>
-                            <quoted>catch</quoted>
-                            <opt-quoted>identifier</opt-quoted>
-                            <term>block</term>
-                        </alt>
-                    </grammar>
-                </section>
-            </chapter>
-            <chapter title="Statements" id="statements">
-                <index term="statements">
-                    <para>In Gear, there are three kinds of statements: simple statements, compiler
-                        control statements, and control flow statements. Simple statements are the
-                        most common and consist of either an expression or a declaration. Compiler
-                        control statements allow the program to change aspects of the compiler’s
-                        behavior and include a conditional compilation block and a line control
-                        statement.</para>
-                    <para>Control flow statements are used to control the flow of execution in a
-                        program. There are several types of control flow statements in Swift,
-                        including loop statements, branch statements, and control transfer
-                        statements. Loop statements allow a block of code to be executed repeatedly,
-                        branch statements allow a certain block of code to be executed only when
-                        certain conditions are met, and control transfer statements provide a way to
-                        alter the order in which code is executed. In addition, Gear provides a
-                        defer statement for running cleanup actions just before the current scope
-                        exits.</para>
-                    <grammar term="statement">
-                        <alt>
-                            <term>selection-statement</term>
-                        </alt>
-                        <alt>
-                            <term>control-statement</term>
-                        </alt>
-                    </grammar>
-                    <para>A semicolon (;) can optionally appear after any statement and is used to
-                        separate multiple statements if they appear on the same line.</para>
-                    <section title="Selection statements">
-                        <para>Selection statements allow the program to execute certain blocks of
-                            code depending on the value of one or more conditions. The values of the
-                            conditions specified in a selection statement control how the program
-                            branches and, therefore, what block of code is executed. Gear has two
-                            selection statements: an <literal>if</literal> statement and a <literal>
-                            switch</literal> statement.</para>
-                        <grammar term="selection-statement">
-                            <alt>
-                                <term>if-statement</term>
-                            </alt>
-                            <alt>
-                                <term>switch-statement</term>
-                            </alt>
-                        </grammar>
-                        <section title="If statement">
-                            <para>“If” statements specify the conditional execution of two blocks
-                                according to the value of a boolean expression. If the expression
-                                evaluates to bold{true}, the “if” block is executed, otherwise, if
-                                present, the “else” block is executed.</para>
-                            <para>If the “if” statement is of the form <literal>if var</literal>,
-                                then conditional execution is determined by whether the variables
-                                are non-null. A variable declared with an explicit type annotation
-                                is matched according to the <ref id="pattern-matching">pattern
-                                matching</ref> rules.</para>
-                            <grammar term="if-statement">
-                                <alt>
-                                    <quoted>if</quoted>
-                                    <term>expression</term>
-                                    <term>block</term>
-                                    <opt-term>else-block</opt-term>
-                                </alt>
-                                <alt>
-                                    <quoted>if</quoted>
-                                    <quoted>var</quoted>
-                                    <term>variable-pattern</term>
-                                    <term>block</term>
-                                    <opt-term>else-block</opt-term>
-                                </alt>
-                            </grammar>
-                            <grammar term="else-block">
-                                <alt>
-                                    <quoted>else</quoted>
-                                    <term>if-statement</term>
-                                </alt>
-                                <alt>
-                                    <quoted>else</quoted>
-                                    <term>block</term>
-                                </alt>
-                            </grammar>
-                            <para>A <literal>if</literal> statement is executed as follows:</para>
-                            <ul>
-                                <li>The <grammarterm>expression</grammarterm> is evaluated.</li>
-                                <li>If <grammarterm>expression</grammarterm> yields <literal>true</literal>,
-                                    control is transferred to <grammarterm>block</grammarterm>.</li>
-                                <li>If <grammarterm>expression</grammarterm> yields <literal>false</literal>,
-                                    control is transferred to the optional <literal>else</literal>
-                                    which may be another “if” statement or the “else” block.</li>
-                            </ul>
-                        </section>
-                        <section title="Switch statement">
-                            <para>“Switch” statements provide multi-way execution. An expression or
-                                type is compared to the &quot;cases&quot; inside the
-                                &quot;switch&quot; to determine which branch to execute. If no case
-                                matches and there is a &quot;default&quot; case, its statements are
-                                executed. There can be at most one default case and it may appear
-                                anywhere in the &quot;switch&quot; statement.</para>
-                            <grammar term="switch-statement">
-                                <alt>
-                                    <quoted>switch</quoted>
-                                    <term>expression</term>
-                                    <opt-term>switch-case-sequence</opt-term>
-                                </alt>
-                            </grammar>
-                            <grammar term="switch-case-sequence">
-                                <alt>
-                                    <term>switch-case</term>
-                                </alt>
-                                <alt>
-                                    <term>switch-case</term>
-                                    <term>switch-case-sequence</term>
-                                </alt>
-                            </grammar>
-                            <grammar term="switch-case">
-                                <alt>
-                                    <quoted>case</quoted>
-                                    <term>expression</term>
-                                    <quoted>:</quoted>
-                                    <term>block</term>
-                                </alt>
-                                <alt>
-                                    <quoted>default</quoted>
-                                    <quoted>:</quoted>
-                                    <term>block</term>
-                                </alt>
-                            </grammar>
-                            <para>A <literal>switch</literal> statement is executed as follows:</para>
-                            <ul>
-                                <li>The switch <grammarterm>expression</grammarterm> is evaluated.</li>
-                                <li>If the switch <grammarterm>expression</grammarterm> yields a
-                                    value that matches a case <grammarterm>expression</grammarterm>,
-                                    control is transferred to its <grammarterm>block</grammarterm>.</li>
-                                <li>If the switch <grammarterm>expression</grammarterm> yields a
-                                    value that does not match any case <grammarterm>expression</grammarterm>,
-                                    control is transferred to the optional <literal>default</literal>.
-                                    If there is no optional <literal>default</literal>, control is
-                                    transferred to the end point of the <literal>switch</literal>
-                                    statement.</li>
-                            </ul>
-                        </section>
-                    </section>
+<chapter title="Expressions">
+<para>
+An expression specifies the computation of a value by applying operators and functions to operands.
+</para>
+
+<section title="Assignment">
+<para>
+An <italic>assignment</italic> replaces the current value stored in a <grammarterm> identifier</grammarterm> with a new value specified by an <grammarterm> expression</grammarterm>.
+An assignment statement may assign a single value to a single variable, or multiple values to a matching number of variables.
+</para>
+
+<grammar term="assignment-expression">
+    <alt><term>identifier</term> <quoted>=</quoted> <term>expression</term></alt>
+</grammar>
+</section>
+
+<section title="Operators">
+<para>
+Expressions are constructed from operands and operators.
+The operators of an expression indicate which operations to apply to the operands.
+Examples of operators include <literal>+</literal>, <literal>-</literal>, <literal>*</literal>, and <literal>/</literal>.
+Examples of operands include literals, fields, local variables, and expressions.
+</para>
+
+<para>
+There are three kinds of operators:
+</para>
+
+<ul>
+    <li>
+Unary operators.
+The unary operators take one operand and use either prefix notation (such as <literal>-x</literal>) or postfix notation (such as <literal>x++</literal>).
+    </li>
+    <li>
+Binary operators.
+The binary operators take two operands and all use infix notation (such as <literal>x + y</literal>).
+</li>
+    <li>
+Ternary operator.
+Only one ternary operator, <literal>?:</literal>, exists; it takes three operands and uses infix notation <literal>(c ? x : y)</literal>.
+    </li>
+</ul>
+
+<para>
+The order of evaluation of operators in an expression is determined by the <italic>precedence</italic> and <italic>associativity</italic> of the operators.
+</para>
+
+<para>
+The order in which operands in an expression are evaluated, is left to right.
+</para>
+
+<para>
+Certain operators can be overloaded.
+Operator overloading permits user-defined operator implementations to be specified for operations where one or both of the operands are of a user-defined class or struct type.
+</para>
+</section>
+
+<section title="Operator precedence and associativity">
+<para>
+When an expression contains multiple operators, the <italic>precedence</italic> of the operators controls the order in which the individual operators are evaluated.
+The precedence of an operator is established by the definition of its associated grammar production.
+</para>
+
+<para>
+The following table summarizes all operators in order of precedence from highest to lowest:
+</para>
+
+<para>
+TODO: Insert precedence table!
+</para>
+
+<para>
+When an operand occurs between two operators with the same precedence, the <italic> associativity</italic> of the operators controls the order in which the operations are performed.
+All operators are <italic>left-associative</italic>, meaning that operations are performed from left to right.
+</para>
+
+<para>
+Precedence and associativity can be controlled using parentheses.
+</para>
+
+<example>
+The expression <literal>x + y * z</literal> first multiplies <literal>y</literal> by <literal>z</literal> and then adds the result to <literal>x</literal>,
+but <literal>(x + y) * z</literal> first adds <literal>x</literal> and <literal>y</literal> and then multiplies the result by <literal>z</literal>.
+</example>
+</section>
+
+<section title="Primary expressions">
+<para>
+Primary expressions include every form of expression.
+</para>
+
+<grammar term="primary-expression">
+    <alt><term>expression</term></alt>
+    <alt><term>record-creation-expression</term></alt>
+</grammar>
+
+<grammar term="expression">
+    <alt><term>literal</term></alt>
+    <alt><term>simple-name</term></alt>
+    <alt><term>member-access</term></alt>
+    <alt><term>invocation-expression</term></alt>
+</grammar>
+
+<para>
+Primary expressions are divided between <grammarterm>expressions</grammarterm> and <grammarterm>record-creation-expressions</grammarterm>.
+Treating <grammarterm> record-creation-expression</grammarterm> in this way, rather than listing it along with the other expression forms, enables the grammar to disallow potentially confusing code such as
+</para>
+
+<code>if x {
+}</code>
+
+<para>
+which could be interpreted as an “if” statement with a conditional<literal>x</literal> and an empty <ref id="block">block</ref> or as an incomplete “if” statement where
+the condition expression constructs a record named <literal>x</literal> with default field initialization.
+</para>
+</section>
+
+<grammar term="assignment-operator" id="assignment-operator">
+    <altset>
+        <alt><quoted>=</quoted></alt>
+        <alt><quoted>+=</quoted></alt>
+        <alt><quoted>-=</quoted></alt>
+        <alt><quoted>*=</quoted></alt>
+        <alt><quoted>/=</quoted></alt>
+    </altset>
+    <altset>
+        <alt><quoted>|=</quoted></alt>
+        <alt><quoted>&lt;&lt;=</quoted></alt>
+        <alt><quoted>&gt;&gt;=</quoted></alt>
+        <alt><quoted>^=</quoted></alt>
+    </altset>
+</grammar>
+
+<grammar term="expression" id="expression">
+    <alt><term>unary-expression</term></alt>
+    <alt><term>binary-expression</term></alt>
+    <alt><term>tertiary-expression</term></alt>
+</grammar>
+
+<grammar term="unary-expression" id="unary-expression">
+    <alt><quoted>+</quoted> <term>expression</term></alt>
+    <alt><quoted>-</quoted> <term>expression</term></alt>
+    <alt><quoted>~</quoted> <term>expression</term></alt>
+</grammar>
+
+<grammar term="binary-expression" id="binary-expression">
+    <alt><term>expression</term> <quoted>+</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>-</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>*</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>/</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>||</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>&lt;&lt;</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>&gt;&gt;</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>|</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>^</quoted> <term>expression</term></alt>
+    <alt><term>expression</term> <quoted>?:</quoted> <term>expression</term></alt>
+</grammar>
+
+<grammar term="tertiary-expression" id="tertiary-expression">
+    <alt><term>expression</term> <quoted>?</quoted> <term>expression</term> <quoted>:</quoted> <term>expression</term></alt>
+</grammar>
+
+<section title="Objects">
+<para>
+Anonymous objects types can be declared and instantiated using the <literal>class</literal> keyword.
+Methods implictly receive the object instance through the contextual keyword: Low Line (U+005F) character.
+</para>
+</section>
+
+<section title="Try">
+<para>
+Here <literal>try</literal> is a unary operator.
+</para>
+
+<grammar term="try-expression">
+    <alt><quoted>try</quoted> <term>expression</term></alt>
+    <alt><quoted>try</quoted> <quoted>!</quoted> <term>expression</term></alt>
+</grammar>
+</section>
+
+<section title="Try-else">
+<para>
+Here a <literal>try-else</literal> is a binary operation accepting two operands: the first expression which might error and the second expression which is returned if the function does here.
+</para>
+
+<grammar term="try-else-expr">
+    <alt><quoted>try</quoted> <term>expression</term> <quoted>else</quoted> <term>expression</term>
+    </alt>
+</grammar>
+</section>
+
+<section title="Catch">
+<para>
+Here <literal>block</literal> will be entered if <grammarterm>expression</grammarterm> errors.
+If <literal>block</literal> does not return control and <grammarterm>expression</grammarterm> errors, then <literal>nil</literal> is returned.
+</para>
+    
+<grammar term="catch-expr">
+    <alt><term>expression</term> <quoted>catch</quoted> <opt-quoted>identifier</opt-quoted> <term>block</term></alt>
+</grammar>
+</section>
+</chapter>
+
+<chapter title="Statements" id="statements">
+<index term="statements">
+
+<para>
+In Gear, there are three kinds of statements: simple statements, compiler control statements, and control flow statements.
+Simple statements are the most common and consist of either an expression or a declaration.
+Compiler control statements allow the program to change aspects of the compiler’s behavior and include a conditional compilation block and a line control statement.
+</para>
+
+<para>
+Control flow statements are used to control the flow of execution in a program.
+There are several types of control flow statements in Swift, including loop statements, branch statements, and control transfer statements.
+Loop statements allow a block of code to be executed repeatedly, branch statements allow a certain block of code to be executed only when certain conditions are met,
+and control transfer statements provide a way to alter the order in which code is executed.
+In addition, Gear provides a defer statement for running cleanup actions just before the current scope exits.
+</para>
+
+<grammar term="statement">
+    <alt><term>selection-statement</term></alt>
+    <alt><term>control-statement</term></alt>
+</grammar>
+
+<para>
+A semicolon (;) can optionally appear after any statement and is used to separate multiple statements if they appear on the same line.
+</para>
+
+<section title="Selection statements">
+<para>
+Selection statements allow the program to execute certain blocks of code depending on the value of one or more conditions.
+The values of the conditions specified in a selection statement control how the program branches and, therefore, what block of code is executed.
+Gear has two selection statements: an <literal>if</literal> statement and a <literal>switch</literal> statement.
+</para>
+
+<grammar term="selection-statement">
+    <alt><term>if-statement</term></alt>
+    <alt><term>switch-statement</term></alt>
+</grammar>
+
+<section title="If statement">
+<para>
+“If” statements specify the conditional execution of two blocks according to the value of a boolean expression.
+If the expression evaluates to bold{true}, the “if” block is executed, otherwise, if present, the “else” block is executed.
+</para>
+
+<para>
+If the “if” statement is of the form <literal>if var</literal>, then conditional execution is determined by whether the variables are non-null.
+A variable declared with an explicit type annotation is matched according to the <ref id="pattern-matching">pattern matching</ref> rules.
+</para>
+
+<grammar term="if-statement">
+    <alt><quoted>if</quoted> <term>expression</term> <term>block</term> <opt-term>else-block</opt-term></alt>
+    <alt><quoted>if</quoted> <quoted>var</quoted> <term>variable-pattern</term> <term>block</term> <opt-term>else-block</opt-term></alt>
+</grammar>
+
+<grammar term="else-block">
+    <alt><quoted>else</quoted> <term>if-statement</term></alt>
+    <alt><quoted>else</quoted> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>if</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>true</literal>, control is transferred to <grammarterm>block</grammarterm>.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>false</literal>, control is transferred to the optional <literal>else</literal> which may be another “if” statement or the “else” block.
+    </li>
+</ul>
+</section>
+
+<section title="Switch statement">
+<para>
+“Switch” statements provide multi-way execution.
+An expression or type is compared to the &quot;cases&quot; inside the &quot;switch&quot; to determine which branch to execute.
+If no case matches and there is a &quot;default&quot; case, its statements are executed.
+There can be at most one default case and it may appear anywhere in the &quot;switch&quot; statement.
+</para>
+
+<grammar term="switch-statement">
+    <alt><quoted>switch</quoted> <term>expression</term> <opt-term>switch-case-sequence</opt-term></alt>
+</grammar>
+
+<grammar term="switch-case-sequence">
+    <alt><term>switch-case</term></alt>
+    <alt><term>switch-case</term> <term>switch-case-sequence</term></alt>
+</grammar>
+
+<grammar term="switch-case">
+    <alt><quoted>case</quoted> <term>expression</term> <quoted>:</quoted> <term>block</term></alt>
+    <alt><quoted>default</quoted> <quoted>:</quoted> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>switch</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The switch <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If the switch <grammarterm>expression</grammarterm> yields a value that matches a case <grammarterm>expression</grammarterm>, control is transferred to its <grammarterm>block</grammarterm>.
+    </li>
+    <li>
+If the switch <grammarterm>expression</grammarterm> yields a value that does not match any case <grammarterm>expression</grammarterm>, control is transferred to the optional <literal>default</literal>.
+If there is no optional <literal>default</literal>, control is transferred to the end point of the <literal>switch</literal> statement.</li>
+</ul>
+</section>
+</section>
+
                     <section title="Iteration statement">
                         <para>Iteration statements repeatedly execute a block.</para>
                         <grammar term="iteration-statement">
