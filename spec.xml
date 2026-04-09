@@ -684,459 +684,334 @@ The type of an <grammarterm>integer-literal</grammarterm> is <literal>Int</liter
 </index>
 </section>
 
-    <section title="Real number literals">
-        <index-group category="literal" term="real number" />
-        <index term="real literal">
-            <grammar term="real-literal">
-                <alt>
-                    <term>decimal-literal</term>
-                    <opt-term>fractional-part</opt-term>
-                    <opt-term>exponent-part</opt-term>
-                </alt>
-            </grammar>
-            <grammar term="fractional-part">
-                <alt>
-                    <quoted>.</quoted>
-                    <term>decimal-literal</term>
-                </alt>
-            </grammar>
-            <grammar term="exponent-part">
-                <alt>
-                    <term>exponent-sign</term>
-                    <opt-term>sign</opt-term>
-                    <term>decimal-literal</term>
-                </alt>
-            </grammar>
-            <grammar term="exponent-sign">
-                <altset>
-                    <alt>
-                        <quoted>e</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>E</quoted>
-                    </alt>
-                </altset>
-            </grammar>
-            <grammar term="sign">
-                <altset>
-                    <alt>
-                        <quoted>+</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>-</quoted>
-                    </alt>
-                </altset>
-            </grammar>
-            <para>The <italic>significand</italic> of a <grammarterm>
-                real-literal</grammarterm> is the <grammarterm>decimal-literal</grammarterm>
-                and <grammarterm>fractional-part</grammarterm>. In the
-                significand, the sequence of <grammarterm>digit</grammarterm>
-                and period are interpreted as base 10 real number <literal>s</literal>.
-                If an <grammarterm>exponent-part</grammarterm> is present, the
-                exponent <literal>e</literal> of the <grammarterm>real-literal</grammarterm>
-                is the result of interpreting the sequence of an optional <grammarterm>
-                sign</grammarterm> and the <grammarterm>digit</grammarterm> as a
-                base 10 integer. Otherwise, the exponent <literal>e</literal> is
-                0. The scaled value of the literal is <latexmath>s times 10^e</latexmath>
-                for a <grammarterm>real-literal</grammarterm>.</para>
-            <example>The <grammarterm>real-literal</grammarterm> <literal>124.7</literal>
-                and <literal>1.247e2</literal> have the same value, as do <literal>
-                0.005600</literal> and <literal>5.600E-3</literal>.</example>
-            <para>If the scaled value is not in the range of representable
-                values for its type, the program is ill-formed. Otherwise, the
-                value of a <grammarterm>real-literal</grammarterm> is the scaled
-                value if representable, else the larger or smaller representable
-                value nearest the scaled value, chosen in an choice of larger or
-                smaller value of <grammarterm>real-literal</grammarterm> manner.</para>
-            <index-group category="real" term="type of" />
-            <para>The type of an <grammarterm>real-literal</grammarterm> is <literal>
-                Real</literal>.</para>
-        </index>
-    </section>
-    <section title="Character literals">
-        <index-group category="literal" term="character literal" />
-        <index term="character literal">
-            <grammar term="character-literal">
-                <alt>
-                    <quoted>&apos;</quoted>
-                    <term>verbatim-character</term>
-                    <quoted>&apos;</quoted>
-                </alt>
-                <alt>
-                    <quoted>&apos;</quoted>
-                    <term>escape-sequence</term>
-                    <quoted>&apos;</quoted>
-                </alt>
-                <alt>
-                    <quoted>&apos;</quoted>
-                    <term>unicode-character-notation</term>
-                    <quoted>&apos;</quoted>
-                </alt>
-            </grammar>
-            <grammar term="verbatim-character">
-                <alt>
-                    <nobreak>any Unicode scaler value</nobreak>
-                </alt>
-            </grammar>
-            <grammar term="escape-sequence">
-                <altset>
-                    <alt>
-                        <quoted>&apos;</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>&quot;</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>\\</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>a</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>b</quoted>
-                    </alt>
-                </altset>
-                <altset>
-                    <alt>
-                        <quoted>f</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>n</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>r</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>t</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>v</quoted>
-                    </alt>
-                </altset>
-            </grammar>
-            <grammar term="unicode-character-notation">
-                <alt>
-                    <quoted>u</quoted>
-                    <term>hexadecimal-quadruple</term>
-                </alt>
-                <alt>
-                    <quoted>U</quoted>
-                    <term>hexadecimal-quadruple</term>
-                    <term>hexadecimal-quadruple</term>
-                </alt>
-            </grammar>
-            <grammar term="hexadecimal-quadruple">
-                <alt>
-                    <term>hexadecimal-digit</term>
-                    <term>hexadecimal-digit</term>
-                    <term>hexadecimal-digit</term>
-                    <term>hexadecimal-digit</term>
-                </alt>
-            </grammar>
-            <para>A character literal consists of exactly one Unicode scalar
-                values enclosed in single quotation marks, as in <literal>
-                &apos;a&apos;</literal>, and can include simple escape sequences
-                (such as <literal>t</literal> for tab), hexadecimal, and Unicode
-                escape sequences.</para>
-            <para>A <index>Unicode scalar value</index> is any code point in the
-                Unicode code space except for surrogate characters. The Unicode
-                code space is the inclusive integer range <literal>0<sub>16</sub></literal>
-                to <literal>10FFFF<sub>16</sub></literal>. Unicode surrogate
-                characters are those code points in the inclusive integer range <literal>
-                D800<sub>16</sub></literal> to <literal>DBFF<sub>16</sub></literal>
-                and <literal>DC00<sub>16</sub></literal> to <literal>DFFF<sub>16</sub></literal>
-                .</para>
-            <para>A Unicode escape sequence begins, excluding Unicode character
-                escape sequences, begins with a backslash and is followed by one
-                of. The substitute characters are listed in <ref
-                    id="table:string-escape" />.</para>
-            <table alignment="ll" id="table:string-escape">
-                <row head="1">
-                    <cell>Escape Sequence</cell>
-                    <cell>Replacement</cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>a</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+0007</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>b</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+0008</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>t</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+0009</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>n</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+000A</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>v</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+000B</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>f</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+000C</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>r</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+000D</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>&quot;</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+0022</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>&apos;</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+0027</literal>
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <literal>\\</literal>
-                    </cell>
-                    <cell>
-                        <literal>U+005C</literal>
-                    </cell>
-                </row>
-            </table>
-            <para>A Unicode character escape sequence begins with a <literal>u</literal>
-                or <literal>U</literal> and is followed by four (4) or eight (8)
-                hexidecimal digits, respectively. The sequence is replaced by
-                the Unicode code point identified by the hexidecimal digits. It
-                is erroneous if the code point is not a Unicode scalar value.</para>
-        </index>
-    </section>
-    <section title="String literals">
-        <grammar term="string-literal">
-            <alt>
-                <quoted>&quot;</quoted>
-                <term>string-character-sequence</term>
-                <quoted>&quot;</quoted>
-            </alt>
-            <alt>
-                <quoted>`</quoted>
-                <term>verbatim-character-sequence</term>
-                <quoted>`</quoted>
-            </alt>
-        </grammar>
-        <grammar term="string-character-sequence">
-            <alt>
-                <term>string-character</term>
-            </alt>
-            <alt>
-                <term>string-character</term>
-                <term>string-character-sequence</term>
-            </alt>
-        </grammar>
-        <grammar term="verbatim-character-sequence">
-            <alt>
-                <term>verbatim-character</term>
-            </alt>
-            <alt>
-                <term>verbatim-character</term>
-                <term>verbatim-character-sequence</term>
-            </alt>
-        </grammar>
-        <grammar term="string-character">
-            <alt>
-                <term>verbatim-character</term>
-            </alt>
-            <alt>
-                <term>escape-sequence</term>
-            </alt>
-            <alt>
-                <term>unicode-character-notation</term>
-            </alt>
-            <alt>
-                <term>interpolation-expression</term>
-            </alt>
-        </grammar>
-        <grammar term="interpolation-expression">
-            <alt>
-                <quoted>{</quoted>
-                <term>expression</term>
-                <quoted>}</quoted>
-            </alt>
-        </grammar>
-        <para>A string literal consists of zero or more Unicode scalar values
-            enclosed in double quotation marks, as in <literal>&quot;hello&quot;</literal>,
-            and can include simple escape sequences (such as <literal>t</literal>
-            for tab), hexadecimal, and Unicode escape sequences.</para>
-        <para>A string literal may contain an <grammarterm>
-            interpolation-expression</grammarterm> which is an <grammarterm>
-            expression</grammarterm> evaluated at runtime and inserted into the
-            string. This process is documented <ref
-                id="interpolation-expression" />.</para>
-    </section>
-    <section title="Boolean literals">
-        <index-group category="literal" term="boolean" />
-        <index term="boolean literal">
-            <grammar term="boolean-literal">
-                <alt>
-                    <quoted>true</quoted>
-                </alt>
-                <alt>
-                    <quoted>false</quoted>
-                </alt>
-            </grammar>
-            <para>The type of an <grammarterm>boolean-literal</grammarterm> is <literal>
-                Bool</literal>.</para>
-        </index>
-    </section>
-    <section title="Nil literal">
-        <index-group category="literal" term="nil" />
-        <index term="nil literal">
-            <grammar term="nil-literal">
-                <alt>
-                    <quoted>nil</quoted>
-                </alt>
-            </grammar>
-            <para>The type of an <grammarterm>nil-literal</grammarterm>
-                represents the absence of a value.</para>
-        </index>
-    </section>
+<section title="Real number literals">
+<index-group category="literal" term="real number" />
+<index term="real literal">
+
+<grammar term="real-literal">
+    <alt><term>decimal-literal</term> <opt-term>fractional-part</opt-term> <opt-term>exponent-part</opt-term></alt>
+</grammar>
+
+<grammar term="fractional-part">
+    <alt><quoted>.</quoted> <term>decimal-literal</term></alt>
+</grammar>
+
+<grammar term="exponent-part">
+    <alt><term>exponent-sign</term> <opt-term>sign</opt-term> <term>decimal-literal</term></alt>
+</grammar>
+
+<grammar term="exponent-sign">
+    <altset>
+        <alt><quoted>e</quoted></alt>
+        <alt><quoted>E</quoted></alt>
+    </altset>
+</grammar>
+
+<grammar term="sign">
+    <altset>
+        <alt><quoted>+</quoted></alt>
+        <alt><quoted>-</quoted></alt>
+    </altset>
+</grammar>
+
+<para>
+The <italic>significand</italic> of a <grammarterm>real-literal</grammarterm> is the <grammarterm>decimal-literal</grammarterm> and <grammarterm>fractional-part</grammarterm>.
+In the significand, the sequence of <grammarterm>digit</grammarterm> and period are interpreted as base 10 real number <literal>s</literal>.
+If an <grammarterm>exponent-part</grammarterm> is present, the exponent <literal>e</literal> of the <grammarterm>real-literal</grammarterm> is the result of interpreting the
+sequence of an optional <grammarterm> sign</grammarterm> and the <grammarterm>digit</grammarterm> as a base 10 integer.
+Otherwise, the exponent <literal>e</literal> is 0.
+The scaled value of the literal is <latexmath>s times 10^e</latexmath> for a <grammarterm>real-literal</grammarterm>.
+</para>
+
+<example>
+The <grammarterm>real-literal</grammarterm> <literal>124.7</literal> and <literal>1.247e2</literal> have the same value, as do <literal>0.005600</literal> and <literal>5.600E-3</literal>.
+</example>
+
+<para>
+If the scaled value is not in the range of representable values for its type, the program is ill-formed.
+Otherwise, the value of a <grammarterm>real-literal</grammarterm> is the scaled value if representable, else the larger or smaller representable value nearest the scaled value,
+chosen in an choice of larger or smaller value of <grammarterm>real-literal</grammarterm> manner.
+</para>
+
+<index-group category="real" term="type of" />
+<para>
+The type of an <grammarterm>real-literal</grammarterm> is <literal>Real</literal>.
+</para>
+
+</index>
 </section>
 
-        <section title="Terminators">
-            <index term="terminators">
-                <para>Terminators delimit productions. Line terminators are commonly
-                    added to improve readability. Semicolon terminators terminates are
-                    useful for termining multiple statements on the same line.</para>
-                <grammar term="terminator">
-                    <alt>
-                        <term>line-term</term>
-                    </alt>
-                    <alt>
-                        <quoted>;</quoted>
-                    </alt>
-                </grammar>
-                <section title="Line terminators">
-                    <index term="line terminators">
-                        <para>Line terminators divide the characters of a Gear source
-                            file into lines. The productions defined by this
-                            specification do not neccessarily include explicit line
-                            terminators, however, one or more shall be implictly
-                            assumed: at the beginning and end of every compilation unit;
-                            after every keyword, operator or punctuator token.</para>
-                        <grammar term="line-term">
-                            <alt>
-                                <nobreak>line feed character <literal>U+000A</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>vertical tab character <literal>U+000B</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>form feed character <literal>U+000C</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>carriage return character <literal>U+000D</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>next line character <literal>U+0085</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>line separator character <literal>U+2028</literal></nobreak>
-                            </alt>
-                            <alt>
-                                <nobreak>paragraph separator character <literal>U+2029</literal></nobreak>
-                            </alt>
-                        </grammar>
-                        <para>For compatibility with <literal>CR+LF</literal> line
-                            endings, if a carriage return character (<literal>U+000D</literal>)
-                            is immediately succeeded by a line feed character (<literal>
-                            U+000A</literal>), then they shall be processed as if they
-                            were a single new line character.</para>
-                    </index>
-                </section>
-                <section title="Semicolon terminators">
-                    <para>The formal syntax uses the semicolon character (<literal>
-                        U+0042</literal>) as a terminator in a number of productions.
-                        Gear programs may substitute the semicolon for a line
-                        terminator.</para>
-                </section>
-            </index>
-        </section>
-        <section title="Compiler Control Statements">
-            <para>A compilation unit may optionally include zero or more compiler
-                control statements. A compiler control statement permits the compilation
-                unit to change aspects of the compiler’s behavior. Gear has three
-                compiler control statements: conditional compilation block, warning, and
-                error control statements.</para>
-            <para>Compiler control statements are processed with the same precedence as
-                strings and comments. Consequently, if a compiler control statement
-                appears within a string, it is considered part of the string literal.
-                Conversely, if such a statement is found within a comment, it is ignored
-                and does not influence the compilation process.</para>
-            <para>Compiler control statements must appear at the beginning of a line and
-                must start with a number sign (<literal>U+0023</literal>). The number
-                sign is followed by an identifier (together the <italic>control keyword</italic>
-                as listed in <ref id="control-keywords" /> that designates the type of
-                control statement.</para>
-            <grammar term="control-keywords">
-                <altset>
-                    <alt>
-                        <quoted>#if</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>#elif</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>#else</quoted>
-                    </alt>
-                </altset>
-                <altset>
-                    <alt>
-                        <quoted>#endif</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>#warning</quoted>
-                    </alt>
-                    <alt>
-                        <quoted>#error</quoted>
-                    </alt>
-                </altset>
-            </grammar>
-            <para>This specification describes the precise semantics of compiler control
-                statements in <ref id="statements" />.</para>
-        </section>
-    </index>
+<section title="Character literals">
+<index-group category="literal" term="character literal" />
+<index term="character literal">
+
+<grammar term="character-literal">
+    <alt><quoted>&apos;</quoted> <term>verbatim-character</term> <quoted>&apos;</quoted></alt>
+    <alt><quoted>&apos;</quoted> <term>escape-sequence</term> <quoted>&apos;</quoted></alt>
+    <alt><quoted>&apos;</quoted> <term>unicode-character-notation</term> <quoted>&apos;</quoted></alt>
+</grammar>
+
+<grammar term="verbatim-character">
+    <alt><nobreak>any Unicode scaler value</nobreak></alt>
+</grammar>
+
+<grammar term="escape-sequence">
+    <altset>
+        <alt><quoted>&apos;</quoted></alt>
+        <alt><quoted>&quot;</quoted></alt>
+        <alt><quoted>\\</quoted></alt>
+        <alt><quoted>a</quoted></alt>
+        <alt><quoted>b</quoted></alt>
+    </altset>
+    <altset>
+        <alt><quoted>f</quoted></alt>
+        <alt><quoted>n</quoted></alt>
+        <alt><quoted>r</quoted></alt>
+        <alt><quoted>t</quoted></alt>
+        <alt><quoted>v</quoted></alt>
+    </altset>
+</grammar>
+
+<grammar term="unicode-character-notation">
+    <alt><quoted>u</quoted> <term>hexadecimal-quadruple</term></alt>
+    <alt><quoted>U</quoted> <term>hexadecimal-quadruple</term> <term>hexadecimal-quadruple</term></alt>
+</grammar>
+
+<grammar term="hexadecimal-quadruple">
+    <alt><term>hexadecimal-digit</term> <term>hexadecimal-digit</term> <term>hexadecimal-digit</term> <term>hexadecimal-digit</term></alt>
+</grammar>
+
+<para>
+A character literal consists of exactly one Unicode scalar values enclosed in single quotation marks, as in <literal> &apos;a&apos;</literal>,
+and can include simple escape sequences (such as <literal>t</literal> for tab), hexadecimal, and Unicode escape sequences.
+</para>
+
+<para>
+A <index>Unicode scalar value</index> is any code point in the Unicode code space except for surrogate characters.
+The Unicode code space is the inclusive integer range <literal>0<sub>16</sub></literal> to <literal>10FFFF<sub>16</sub></literal>.
+Unicode surrogate characters are those code points in the inclusive integer range <literal>D800<sub>16</sub></literal> to <literal>DBFF<sub>16</sub></literal>
+and <literal>DC00<sub>16</sub></literal> to <literal>DFFF<sub>16</sub></literal>.
+</para>
+
+<para>
+A Unicode escape sequence begins, excluding Unicode character escape sequences, begins with a backslash and is followed by one of.
+The substitute characters are listed in <ref id="table:string-escape" />.
+</para>
+
+<table alignment="ll" id="table:string-escape">
+    <row head="1">
+        <cell>Escape Sequence</cell>
+        <cell>Replacement</cell>
+    </row>
+    <row>
+        <cell><literal>a</literal></cell>
+        <cell><literal>U+0007</literal></cell>
+    </row>
+    <row>
+        <cell><literal>b</literal></cell>
+        <cell><literal>U+0008</literal></cell>
+    </row>
+    <row>
+        <cell><literal>t</literal></cell>
+        <cell><literal>U+0009</literal></cell>
+    </row>
+    <row>
+        <cell><literal>n</literal></cell>
+        <cell><literal>U+000A</literal></cell>
+    </row>
+    <row>
+        <cell><literal>v</literal></cell>
+        <cell><literal>U+000B</literal></cell>
+    </row>
+    <row>
+        <cell><literal>f</literal></cell>
+        <cell><literal>U+000C</literal></cell>
+    </row>
+    <row>
+        <cell><literal>r</literal></cell>
+        <cell><literal>U+000D</literal></cell>
+    </row>
+    <row>
+        <cell><literal>&quot;</literal></cell>
+        <cell><literal>U+0022</literal></cell>
+    </row>
+    <row>
+        <cell><literal>&apos;</literal></cell>
+        <cell><literal>U+0027</literal></cell>
+    </row>
+    <row>
+        <cell><literal>\\</literal></cell>
+        <cell><literal>U+005C</literal></cell>
+    </row>
+</table>
+
+<para>
+A Unicode character escape sequence begins with a <literal>u</literal> or <literal>U</literal> and is followed by four (4) or eight (8) hexidecimal digits, respectively.
+The sequence is replaced by the Unicode code point identified by the hexidecimal digits.
+It is erroneous if the code point is not a Unicode scalar value.
+</para>
+
+</index>
+</section>
+
+<section title="String literals">
+<grammar term="string-literal">
+    <alt><quoted>&quot;</quoted> <term>string-character-sequence</term> <quoted>&quot;</quoted></alt>
+    <alt><quoted>`</quoted> <term>verbatim-character-sequence</term> <quoted>`</quoted></alt>
+</grammar>
+
+<grammar term="string-character-sequence">
+    <alt><term>string-character</term></alt>
+    <alt><term>string-character</term> <term>string-character-sequence</term></alt>
+</grammar>
+
+<grammar term="verbatim-character-sequence">
+    <alt><term>verbatim-character</term></alt>
+    <alt><term>verbatim-character</term> <term>verbatim-character-sequence</term></alt>
+</grammar>
+
+<grammar term="string-character">
+    <alt><term>verbatim-character</term></alt>
+    <alt><term>escape-sequence</term></alt>
+    <alt><term>unicode-character-notation</term></alt>
+    <alt><term>interpolation-expression</term></alt>
+</grammar>
+
+<grammar term="interpolation-expression">
+    <alt><quoted>{</quoted> <term>expression</term> <quoted>}</quoted></alt>
+</grammar>
+
+<para>
+A string literal consists of zero or more Unicode scalar values enclosed in double quotation marks, as in <literal>&quot;hello&quot;</literal>,
+and can include simple escape sequences (such as <literal>t</literal> for tab), hexadecimal, and Unicode escape sequences.
+</para>
+
+<para>
+A string literal may contain an <grammarterm>interpolation-expression</grammarterm> which is an <grammarterm>expression</grammarterm> evaluated at runtime and inserted into the string.
+This process is documented <ref id="interpolation-expression" />.
+</para>
+</section>
+
+<section title="Boolean literals">
+<index-group category="literal" term="boolean" />
+<index term="boolean literal">
+
+<grammar term="boolean-literal">
+    <alt><quoted>true</quoted></alt>
+    <alt><quoted>false</quoted></alt>
+</grammar>
+
+<para>
+The type of an <grammarterm>boolean-literal</grammarterm> is <literal>Bool</literal>.
+</para>
+
+</index>
+</section>
+
+<section title="Nil literal">
+<index-group category="literal" term="nil" />
+<index term="nil literal">
+
+<grammar term="nil-literal">
+    <alt><quoted>nil</quoted></alt>
+</grammar>
+
+<para>
+The type of an <grammarterm>nil-literal</grammarterm> represents the absence of a value.
+</para>
+
+</index>
+</section>
+
+</section>
+
+<section title="Terminators">
+<index term="terminators">
+
+<para>
+Terminators delimit productions. Line terminators are commonly added to improve readability.
+Semicolon terminators terminates are useful for termining multiple statements on the same line.
+</para>
+
+<grammar term="terminator">
+    <alt><term>line-term</term></alt>
+    <alt><quoted>;</quoted></alt>
+</grammar>
+
+<section title="Line terminators">
+<index term="line terminators">
+
+<para>
+Line terminators divide the characters of a Gear source file into lines.
+The productions defined by this specification do not neccessarily include explicit line terminators, however, one or more shall be implictly
+assumed: at the beginning and end of every compilation unit; after every keyword, operator or punctuator token.
+</para>
+
+<grammar term="line-term">
+    <alt><nobreak>line feed character <literal>U+000A</literal></nobreak></alt>
+    <alt><nobreak>vertical tab character <literal>U+000B</literal></nobreak></alt>
+    <alt><nobreak>form feed character <literal>U+000C</literal></nobreak></alt>
+    <alt><nobreak>carriage return character <literal>U+000D</literal></nobreak></alt>
+    <alt><nobreak>next line character <literal>U+0085</literal></nobreak></alt>
+    <alt><nobreak>line separator character <literal>U+2028</literal></nobreak></alt>
+    <alt><nobreak>paragraph separator character <literal>U+2029</literal></nobreak></alt>
+</grammar>
+
+<para>
+For compatibility with <literal>CR+LF</literal> line endings, if a carriage return character (<literal>U+000D</literal>)
+is immediately succeeded by a line feed character (<literal>U+000A</literal>), then they shall be processed as if they were a single new line character.
+</para>
+
+</index>
+</section>
+
+<section title="Semicolon terminators">
+<para>
+The formal syntax uses the semicolon character (<literal>U+0042</literal>) as a terminator in a number of productions.
+Gear programs may substitute the semicolon for a line terminator.
+</para>
+</section>
+
+</index>
+</section>
+
+<section title="Compiler Control Statements">
+<para>
+A compilation unit may optionally include zero or more compiler control statements.
+A compiler control statement permits the compilation unit to change aspects of the compiler’s behavior.
+Gear has three compiler control statements: conditional compilation block, warning, and error control statements.
+</para>
+
+<para>
+Compiler control statements are processed with the same precedence as strings and comments.
+Consequently, if a compiler control statement appears within a string, it is considered part of the string literal.
+Conversely, if such a statement is found within a comment, it is ignored and does not influence the compilation process.
+</para>
+
+<para>
+Compiler control statements must appear at the beginning of a line and must start with a number sign (<literal>U+0023</literal>).
+The number sign is followed by an identifier (together the <italic>control keyword</italic> as listed in <ref id="control-keywords" />) that designates the type of control statement.
+</para>
+
+<grammar term="control-keywords">
+    <altset>
+        <alt><quoted>#if</quoted></alt>
+        <alt><quoted>#elif</quoted></alt>
+        <alt><quoted>#else</quoted></alt>
+    </altset>
+    <altset>
+        <alt><quoted>#endif</quoted></alt>
+        <alt><quoted>#warning</quoted></alt>
+        <alt><quoted>#error</quoted></alt>
+    </altset>
+</grammar>
+
+<para>
+This specification describes the precise semantics of compiler control statements in <ref id="statements" />.
+</para>
+</section>
+
+</index>
 </chapter>
 
             <chapter title="Basic concepts">
