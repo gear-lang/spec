@@ -259,7 +259,9 @@ func main() {
     io.print(&quot;Hello, World!&quot;)
 }</code>
 
-<para>Close examination of this program is illuminating:</para>
+<para>
+Close examination of this program is illuminating:
+</para>
 
 <ul>
     <li>The <literal>use std.io</literal> directive references the submodule <literal>io</literal> of the global module <literal>std</literal>.</li>
