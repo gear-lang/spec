@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-from typing import List, Optional
+from typing import List
 
 import argparse
-import subprocess
 import os
 import sys
 import lxml
@@ -368,19 +367,17 @@ class Arguments(argparse.Namespace):
     def __init__(self) -> None:
         self.infile = ""
 
-def parse_args(arguments: Optional[List[str]] = None) -> int:
+def parse_args() -> int:
     parser = argparse.ArgumentParser(prog="process", description="Process XML into LaTeX.")
     parser.add_argument("infile")
 
     args = Arguments()
-    args = parser.parse_args(arguments, namespace=args)
+    args = parser.parse_args(namespace=args)
 
-    process = subprocess.run(["muse", "--pretty-print", "--convert=xml", args.infile], capture_output=True)
-    if process.returncode != 0:
-        print(process.stderr.decode("utf-8"))
-        sys.exit(1)
+    fp = open(args.infile, "rb")
+    content = fp.read()
 
-    root = lxml.etree.fromstring(process.stdout)
+    root = lxml.etree.fromstring(content)
     outfile, _ = os.path.splitext(os.path.basename(args.infile))
 
     with open(f"_{outfile}.tex", "w", encoding="utf-8") as out:

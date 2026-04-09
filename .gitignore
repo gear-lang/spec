@@ -16,7 +16,6 @@ std-gram.ext
 *.fdb_latexmk
 *.fls
 *.xtr
-*.xml
 *.html
 .tags
 .tags_sorted_by_file

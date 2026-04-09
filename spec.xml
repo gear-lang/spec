@@ -1,0 +1,2983 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<document>
+<title>Gear Language Specification</title>
+<chapters>
+
+<chapter title="Introduction">
+<index term="introduction">
+
+<para>
+This document specifies requirements for implementations of the Gear™ programming language version 1.0.
+It describes the representation of Gear programs, the syntax and constraints of the Gear language, and the restrictions and limits imposed by a conforming implementation of Gear.
+The specification does not describe the mechanism by which Gear is transformed into an executable program, the mechanism by which a Gear program is invoked, or the mechanism by which a host embedds Gear.
+</para>
+
+<para>
+The latest canonical version of the specification can be obtained from: https://gear-lang.org/.
+</para>
+
+<para>
+Defect reports for the specification should be filed on GitHub: https://github.com/gear-lang/spec/issues.
+</para>
+
+<para>
+This document is protected by copyright laws and contains material proprietary to Railgun Labs a limited liability company (LLC) incorporated in the United States of America.
+Railgun Labs grants a conditional copyright license to use and reproduce this unmodified specification for any purpose, without fee or royalty.
+No license to any patent, trademark or other intellectual property rights are granted under these terms.
+</para>
+
+<para>
+Gear™ is a trademark of Railgun Labs.
+All other product names, trademarks, and/or company names are used solely for identification and belong to their respective owners.
+</para>
+
+</index>
+</chapter>
+
+<chapter title="Normative references">
+
+<para>
+The following documents are referred to in the text in such a way that some or all of their content constitutes requirements of this document.
+For dated references, only the edition cited applies.
+For undated references, the latest edition of the referenced document (including any amendments) applies.
+</para>
+
+<ul>
+    <li>
+        The Unicode Consortium. Unicode Standard Annex, UAX #15, <italic>Unicode Normalization Forms</italic>[online].
+        Edited by Ken Whistler. Revision 54; issued for Unicode 15.1.0. 2023-08-12. Available at https://www.unicode.org/reports/tr15/tr15-54.html
+    </li>
+    <li>
+        The Unicode Consortium. Unicode Standard Annex, UAX #31, <italic>Unicode Identifiers and Syntax</italic>[online].
+        Edited by Mark Davis and Robin Leroy. Revision 39; issued for Unicode 15.1.0. 2023-09-01. Available at https://www.unicode.org/reports/tr31/tr31-39.html
+    </li>
+</ul>
+
+</chapter>
+
+<chapter title="Conformance">
+<index term="conformance requirements">
+
+<para>
+Conformance is of interest to the following audiences:
+</para>
+
+<ul>
+    <li>Those designing, implementing, or maintaining Gear implementations.</li>
+    <li>Governmental or commercial entities wishing to procure Gear implementations.</li>
+    <li>Testing organizations wishing to provide a Gear conformance test suite.</li>
+    <li>Programmers wishing to port code from one Gear implementation to another.</li>
+    <li>Educators wishing to teach Gear.</li>
+    <li>Authors wanting to write about Gear.</li>
+</ul>
+
+<para>
+As such, conformance is most important, and the bulk of this specification is aimed at specifying the characteristics that make Gear implementations and Gear programs conforming ones.
+</para>
+
+<para>
+The text in this specification that specifies requirements is considered <italic>normative</italic>.
+All other text in this specification is <italic> informative</italic>; that is, for information purposes only.
+Unless stated otherwise, all text is normative.
+Normative text is further broken into <italic>required and conditional</italic> categories.
+<italic>Conditionally</italic> normative text specifies a feature and its requirements where the feature is optional.
+However, if that feature is provided, its syntax and semantics shall be exactly as specified.
+</para>
+
+<para>
+A <italic>strictly conforming program</italic> shall use only those features of the language specified in this specification as being required.
+(This means that a strictly conforming program cannot use any conditionally normative feature).
+It shall not produce output dependent on any unspecified, undefined, or implementation-defined behavior.
+“Must” describes essential behavior that needs to be uniformly applied across all implementations.
+“Should” describes a strong recommendation, but is not required.
+</para>
+
+<para>
+A <italic>conforming implementation</italic> of Gear shall accept any strictly conforming program.
+</para>
+
+<para>
+A conforming implementation of Gear shall provide and support all the types, values, functions, and program syntax and semantics described in the normative (but not the conditionally normative) parts in this specification.
+</para>
+
+<para>
+A conforming implementation of Gear is permitted to provide additional types, values, and functions beyond those described in this specification, provided they do not alter the behavior of any strictly conforming program.
+</para>
+
+<para>
+A conforming implementation of Gear shall support the standard library documented in <partref id="stdlib" />.
+This library is included by reference in this specification.
+</para>
+
+<para>
+A conforming program is one that is acceptable to a conforming implementation.
+</para>
+
+</index>
+</chapter>
+
+<chapter title="Notational conventions">
+<index term="notation">
+
+<para>
+Lexical and syntactic grammars for Gear are interspersed throughout this specification.
+The lexical grammar defines how characters can be combined to form <partref id="tokens">tokens</partref>, the minimal lexical elements of the language.
+The syntactic grammar defines how tokens can be combined to make valid Gear programs.
+</para>
+
+<para>
+Grammar productions include both non-terminal and terminal symbols.
+In grammar productions, non-terminal symbols are shown in <italic>italic type</italic> and terminal symbols are shown in <literal>fixed-width font</literal>.
+Each non-terminal is defined by a set of productions.
+The first line of a set of productions is the name of the non-terminal, followed by a colon.
+Each successive indented line contains the right-hand side for a production that has the non-terminal symbol as the left-hand side.
+For example:
+</para>
+
+<grammar term="integer-literal" example="true">
+    <alt><term>binary-literal</term></alt>
+    <alt><term>octal-literal</term></alt>
+    <alt><term>decimal-literal</term></alt>
+    <alt><term>hexadecimal-literal</term></alt>
+</grammar>
+
+<para>
+Alternatives are normally listed on separate lines though in cases where there are many alternatives, the phrase “one of” precedes a list of the options.
+This is simply shorthand for listing each of the alternatives on a separate line. For example:
+</para>
+
+<grammar term="decimal-digit" example="true">
+    <altset>
+        <alt><quoted>0</quoted></alt>
+        <alt><quoted>1</quoted></alt>
+        <alt><quoted>2</quoted></alt>
+        <alt><quoted>3</quoted></alt>
+        <alt><quoted>4</quoted></alt>
+        <alt><quoted>5</quoted></alt>
+        <alt><quoted>6</quoted></alt>
+        <alt><quoted>7</quoted></alt>
+        <alt><quoted>8</quoted></alt>
+        <alt><quoted>9</quoted></alt>
+    </altset>
+</grammar>
+
+<para>is equivalent to:</para>
+
+<grammar term="decimal-digit" example="true">
+    <alt><quoted>0</quoted></alt>
+    <alt><quoted>1</quoted></alt>
+    <alt><quoted>2</quoted></alt>
+    <alt><quoted>3</quoted></alt>
+    <alt><quoted>4</quoted></alt>
+    <alt><quoted>5</quoted></alt>
+    <alt><quoted>6</quoted></alt>
+    <alt><quoted>7</quoted></alt>
+    <alt><quoted>8</quoted></alt>
+    <alt><quoted>9</quoted></alt>
+</grammar>
+
+<para>
+A subscripted suffix “opt”, as in <opt-term>identifier</opt-term>, is used as shorthand to indicate an optional symbol.
+The example:
+</para>
+
+<grammar term="real-literal">
+    <alt><term>decimal-literal</term> <opt-term>fractional-part</opt-term> <opt-term>exponent-part</opt-term></alt>
+</grammar>
+
+<para>is equivalent to:</para>
+
+<grammar term="real-literal">
+    <alt><term>decimal-literal</term></alt>
+    <alt><term>decimal-literal</term> <term>fractional-part</term></alt>
+    <alt><term>decimal-literal</term> <term>exponent-part</term></alt>
+    <alt><term>decimal-literal</term> <term>fractional-part</term> <term>exponent-part</term></alt>
+</grammar>
+
+<para>
+All characters used to define the grammar are to be understood as the appropriate Unicode character from the ASCII range, as opposed to any similar-looking characters from other Unicode ranges.
+</para>
+
+</index>
+</chapter>
+
+<chapter title="General description">
+<informative>
+<para>
+This Specifiation is intended to be used by implementers, academics, and application programmers.
+As such, it contains a considerable amount of explanatory material that, strictly speaking, is not necessary in a formal language specification.
+</para>
+
+<para>
+Examples are provided to illustrate possible forms of the constructions described.
+References are used to refer to related clauses.
+Notes are provided to give advice or guidance to implementers or programmers.
+Annexes provide additional information and summarize the information contained in this Specification.
+</para>
+
+<para>
+Except for whole clauses or annexes that are identified as being informative, informative text that is contained within normative text is indicated in two ways:
+</para>
+
+<ol>
+    <li>
+        <example>The following example … code fragment, possibly with some narrative … </example>
+    </li>
+    <li>
+        <note>narrative … </note>
+    </li>
+</ol>
+
+</informative>
+</chapter>
+
+<chapter title="Language Overview">
+<informative>
+
+<para>
+Gear is a simple and small, type-safe, procedural programming language.
+Its syntax will be immediately familair to anyone with a background with C family programming language.
+Its small size is designed to mirror that of other small languages, like Lua and Go.
+</para>
+
+<para>
+The rest of this chapter describes the essential features of the language.
+While later chapters describe rules and exceptions using formal language, this chapter strives for clarity and brevity at the expense of completeness.
+The intent is to provide the reader with an introduction to the language that will facilitate the writing of early programs and the reading of later chapters.
+</para>
+
+<section title="Getting started">
+<para>
+The canonical “hello, world” program can be written as follows:
+</para>
+
+<code>use std.io
+
+module main
+
+func main() {
+    io.print(&quot;Hello, World!&quot;)
+}</code>
+
+<para>Close examination of this program is illuminating:</para>
+
+<ul>
+    <li>The <literal>use std.io</literal> directive references the submodule <literal>io</literal> of the global module <literal>std</literal>.</li>
+</ul>
+</section>
+
+</informative>
+</chapter>
+
+<chapter title="Lexical structure">
+<index term="lexical structure">
+
+<para>
+A Gear <index>program</index> consists of one or more compilation units.
+A <index>compilation unit</index> is an ordered sequence of Unicode characters.
+Compilation units typically have a one-to-one correspondence with source files in a file system, but this correspondence is not required.
+</para>
+
+<para>
+A Gear <index>compiler</index> is a program that translates a Gear program into an executable form.
+When a Gear program is compiled, all of the compilation units are processed together.
+Compilation units can depend on each other, possibly in a circular fashion.
+</para>
+
+<para>
+For compatibility with other tools, a Gear compiler may ignore the Byte Order Mark character (<literal>U+FEFF</literal>) if it is the first Unicode character in the source text.
+</para>
+
+<para>
+For compatibility with source code editing tools that add end-of-file markers, and to enable a source file to be viewed as a sequence of properly terminated lines,
+if the last character of the source file is a Control-Z character (<literal>U+001A</literal>), the character is deleted.
+</para>
+
+<para>
+The handling of the Unicode NUL character (<literal>U+0000</literal>) is implementation-defined.
+It is strongly recommended that developers avoid using this character in their source code, for the sake of portability and readability.
+When the character is required within a character or string literal, the escape sequences <literal>0</literal> or <literal>u0000</literal> may be used.
+</para>
+
+<para>
+It is beyond the scope of this standard to define how a file using a character representation other than Unicode might be transformed into a sequence of Unicode character.
+</para>
+
+<section title="White space">
+<index term="white space">
+
+<para>
+White space is defined as any Unicode character with the property <literal>Pattern_White_Space</literal>.
+</para>
+
+</index>
+</section>
+
+<section title="Comments">
+<index term="comments">
+
+<para>
+Two forms of comments are supported: delimited comments and single-line comments.
+</para>
+
+<para>
+<index>delimited comment</index>
+<index-group category="comment" term="/* */" />
+A <italic>delimited comment</italic> begins with the characters <literal>*</literal> and ends with the characters <literal> */</literal>.
+They can occupy a portion of a line, a single line, or multiple lines.
+Delimited comments can nest.
+</para>
+
+<para>
+<index>single-line comment</index>
+<index-group category="comment" term="//" />
+A <italic>single-line comment</italic> begins with the <literal>//</literal> characters and extends to the end of the line.
+The character sequences <literal>*</literal> and <literal>*/</literal> has no special meaning within a single-line comment, and the character sequences <literal>//</literal> has no special meaning within a delimited comment.
+</para>
+
+<para>
+Comments are not processed within string literals.
+</para>
+
+</index>
+</section>
+        
+<section title="Tokens" id="tokens">
+<index term="tokens">
+
+<para>
+A <grammarterm>lexical token</grammarterm> is a string with an assigned meaning.
+In Gear there are several kinds of tokens: identifiers, keywords, <footnote desc="Literals include strings and numeric literals.">literals</footnote>, operators, and terminators.
+White space and comments are not tokens, though they act as separators for tokens.
+</para>
+
+<para>
+Token matching is <italic>greedy</italic> which means the longest token that can be matched is matched.
+That means given the token stream <literal>+=</literal> the operator is matched as-is in its entirety; it is <italic>not</italic> matched as two individual <literal>+</literal> and <literal>=</literal> tokens.</para>
+
+<grammar term="token">
+    <alt><term>identifier</term></alt>
+    <alt><term>keyword</term></alt>
+    <alt><term>operator-or-punctuator</term></alt>
+    <alt><term>literal</term></alt>
+    <alt><term>terminator</term></alt>
+    <alt><term>control-statement</term></alt>
+</grammar>
+
+</index>
+</section>
+
+        <section title="Identifiers">
+            <index term="identifiers">
+                <para>An identifier is an arbitrarily long sequence of letters,
+                    ideographs, and digits. Identifiers are <italic>case sensitive</italic>,
+                    that is, uppercase and lowercase letters are considered distinct.
+                    Identifiers are considered equivalent if they are <italic>canonically
+                    equivalent</italic> as described by UAX #15.</para>
+                <para>The character properties <literal>XID_Start</literal> and <literal>
+                    XID_Continue</literal> are <italic>Derived Core Properties</italic>
+                    as described by UAX #44.</para>
+                <grammar term="identifier">
+                    <alt>
+                        <term>identifier-start</term>
+                        <term>identifier-continue-sequence</term>
+                    </alt>
+                </grammar>
+                <grammar term="identifier-start">
+                    <alt>
+                        <nobreak>any Unicode character with property <literal>XID_Start</literal></nobreak>
+                    </alt>
+                    <alt>
+                        <term>low-line-character</term>
+                    </alt>
+                </grammar>
+                <grammar term="identifier-continue">
+                    <alt>
+                        <nobreak>any Unicode character with property <literal>
+                            XID_Continue</literal></nobreak>
+                    </alt>
+                    <alt>
+                        <term>low-line-character</term>
+                    </alt>
+                </grammar>
+                <grammar term="identifier-continue-sequence">
+                    <alt>
+                        <term>identifier-continue</term>
+                    </alt>
+                    <alt>
+                        <term>identifier-continue</term>
+                        <term>identifier-continue-sequence</term>
+                    </alt>
+                </grammar>
+                <grammar term="low-line-character">
+                    <alt>
+                        <nobreak>the Unicode character <literal>U+005F</literal></nobreak>
+                    </alt>
+                </grammar>
+            </index>
+        </section>
+        <section title="Keywords">
+            <index term="keyword">
+                <para>A <grammarterm>keyword</grammarterm> is an identifier-like
+                    sequence of characters that is reserved and cannot be used as an
+                    identifier.</para>
+                <grammar term="keyword" id="table:keywords">
+                    <altset>
+                        <alt>
+                            <quoted>break</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>case</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>catch</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>class</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>const</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>continue</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>default</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>defer</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>do</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>else</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>extern</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>for</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>func</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>if</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>in</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>module</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>nil</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>panic</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>public</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>raise</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>return</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>switch</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>try</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>use</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>var</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>while</quoted>
+                        </alt>
+                    </altset>
+                </grammar>
+            </index>
+        </section>
+        <section title="Operators and punctuators">
+            <para>There are several kinds of operators and punctuators. Operators are
+                used in expressions to describe operations involving one or more
+                operands. Punctuators are for grouping and separating. Each operator and
+                punctuator is converted to a single token.</para>
+            <grammar term="operator-or-punctuator" id="operator-or-punctuator">
+                <altset>
+                    <alt>
+                        <quoted>{</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>}</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>[</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>]</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>(</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>)</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>;</quoted>
+                    </alt>
+                </altset>
+                <altset>
+                    <alt>
+                        <quoted>?</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>?:</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>.</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>~</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>!</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>-&gt;</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>+</quoted>
+                    </alt>
+                </altset>
+                <altset>
+                    <alt>
+                        <quoted>-</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>*</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>/</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>&amp;&amp;</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>||</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>&lt;&lt;</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>&gt;&gt;</quoted>
+                    </alt>
+                </altset>
+                <altset>
+                    <alt>
+                        <quoted>^</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>|</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>+=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>-=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>*=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>/=</quoted>
+                    </alt>
+                </altset>
+                <altset>
+                    <alt>
+                        <quoted>|=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>&lt;&lt;=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>&gt;&gt;=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>^=</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>..</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>...</quoted>
+                    </alt>
+                </altset>
+            </grammar>
+        </section>
+        <section title="Literals">
+            <para>A literal is a source code representation of a value.</para>
+            <grammar term="literal">
+                <alt>
+                    <term>integer-literal</term>
+                </alt>
+                <alt>
+                    <term>real-literal</term>
+                </alt>
+                <alt>
+                    <term>character-literal</term>
+                </alt>
+                <alt>
+                    <term>string-literal</term>
+                </alt>
+                <alt>
+                    <term>boolean-literal</term>
+                </alt>
+                <alt>
+                    <term>null-literal</term>
+                </alt>
+            </grammar>
+            <section title="Integer literals">
+                <index-group category="literal" term="integer" />
+                <index term="integer literal">
+                    <grammar term="integer-literal">
+                        <alt>
+                            <term>binary-literal</term>
+                        </alt>
+                        <alt>
+                            <term>octal-literal</term>
+                        </alt>
+                        <alt>
+                            <term>decimal-literal</term>
+                        </alt>
+                        <alt>
+                            <term>hexadecimal-literal</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="binary-literal">
+                        <alt>
+                            <quoted>0b</quoted>
+                            <term>binary-digit-sequence</term>
+                        </alt>
+                        <alt>
+                            <quoted>0B</quoted>
+                            <term>binary-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="binary-digit-sequence">
+                        <alt>
+                            <term>binary-digit</term>
+                        </alt>
+                        <alt>
+                            <term>binary-digit</term>
+                            <term>binary-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="octal-literal">
+                        <alt>
+                            <quoted>0c</quoted>
+                            <term>octal-digit-sequence</term>
+                        </alt>
+                        <alt>
+                            <quoted>0C</quoted>
+                            <term>octal-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="octal-digit-sequence">
+                        <alt>
+                            <term>octal-digit</term>
+                        </alt>
+                        <alt>
+                            <term>octal-digit</term>
+                            <term>octal-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="decimal-literal">
+                        <alt>
+                            <term>decimal-digit</term>
+                        </alt>
+                        <alt>
+                            <term>decimal-digit</term>
+                            <term>decimal-literal</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="hexadecimal-literal">
+                        <alt>
+                            <quoted>0c</quoted>
+                            <term>hexadecimal-digit-sequence</term>
+                        </alt>
+                        <alt>
+                            <quoted>0C</quoted>
+                            <term>hexadecimal-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="hexadecimal-digit-sequence">
+                        <alt>
+                            <term>hexadecimal-digit</term>
+                        </alt>
+                        <alt>
+                            <term>hexadecimal-digit</term>
+                            <term>hexadecimal-digit-sequence</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="binary-digit">
+                        <altset>
+                            <alt>
+                                <quoted>0</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>1</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <grammar term="octal-digit">
+                        <altset>
+                            <alt>
+                                <quoted>0</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>1</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>2</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>3</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>4</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>5</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>6</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>7</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <grammar term="decimal-digit">
+                        <altset>
+                            <alt>
+                                <quoted>0</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>1</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>2</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>3</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>4</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>5</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>6</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>7</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>8</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>9</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <grammar term="hexadecimal-digit">
+                        <altset>
+                            <alt>
+                                <quoted>0</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>1</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>2</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>3</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>4</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>5</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>6</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>7</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>8</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>9</quoted>
+                            </alt>
+                        </altset>
+                        <altset>
+                            <alt>
+                                <quoted>a</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>b</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>c</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>d</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>e</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>f</quoted>
+                            </alt>
+                        </altset>
+                        <altset>
+                            <alt>
+                                <quoted>A</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>B</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>C</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>D</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>E</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>F</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <index-group category="literal" term="base of integer" />
+                    <para>In an <grammarterm>integer-literal</grammarterm>, the sequence
+                        of <grammarterm>binary-digit</grammarterm>, <grammarterm>
+                        octal-digit</grammarterm>, <grammarterm>digit</grammarterm>, or <grammarterm>
+                        hexadecimal-digit</grammarterm>, is interpreted as a base <literal>
+                        N</literal> integer as shown in table <ref id="table:base" />;
+                        the lexically first digit of the sequence of digits is the most
+                        significant.</para>
+                    <table alignment="ll" id="table:base"
+                        caption="Base of integer literals.">
+                        <row>
+                            <cell>Kind of <grammarterm>integer-literal</grammarterm></cell>
+                            <cell>Base N</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <grammarterm>binary-literal</grammarterm>
+                            </cell>
+                            <cell>2</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <grammarterm>octal-literal</grammarterm>
+                            </cell>
+                            <cell>8</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <grammarterm>decimal-literal</grammarterm>
+                            </cell>
+                            <cell>10</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <grammarterm>hexadecimal-literal</grammarterm>
+                            </cell>
+                            <cell>16</cell>
+                        </row>
+                    </table>
+                    <para>The <grammarterm>hexadecimal-digit</grammarterm> <literal>a</literal>
+                        through <literal>f</literal> and <literal>A</literal> through <literal>
+                        F</literal> have decimal values ten through fifteen.</para>
+                    <example>The number twelve can be written <literal>12</literal>, <literal>
+                        0C14</literal>, <literal>0XC</literal>, or <literal>0b1100</literal>.
+                        The <grammarterm>integer-literal</grammarterm> <literal>1048576</literal>
+                        , <literal>0x100000</literal>, and <literal>0c004000000</literal>
+                        all have the same value.</example>
+                    <index-group category="integer" term="type of" />
+                    <para>The type of an <grammarterm>integer-literal</grammarterm> is <literal>
+                        Int</literal>.</para>
+                </index>
+            </section>
+            <section title="Real number literals">
+                <index-group category="literal" term="real number" />
+                <index term="real literal">
+                    <grammar term="real-literal">
+                        <alt>
+                            <term>decimal-literal</term>
+                            <opt-term>fractional-part</opt-term>
+                            <opt-term>exponent-part</opt-term>
+                        </alt>
+                    </grammar>
+                    <grammar term="fractional-part">
+                        <alt>
+                            <quoted>.</quoted>
+                            <term>decimal-literal</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="exponent-part">
+                        <alt>
+                            <term>exponent-sign</term>
+                            <opt-term>sign</opt-term>
+                            <term>decimal-literal</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="exponent-sign">
+                        <altset>
+                            <alt>
+                                <quoted>e</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>E</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <grammar term="sign">
+                        <altset>
+                            <alt>
+                                <quoted>+</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>-</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <para>The <italic>significand</italic> of a <grammarterm>
+                        real-literal</grammarterm> is the <grammarterm>decimal-literal</grammarterm>
+                        and <grammarterm>fractional-part</grammarterm>. In the
+                        significand, the sequence of <grammarterm>digit</grammarterm>
+                        and period are interpreted as base 10 real number <literal>s</literal>.
+                        If an <grammarterm>exponent-part</grammarterm> is present, the
+                        exponent <literal>e</literal> of the <grammarterm>real-literal</grammarterm>
+                        is the result of interpreting the sequence of an optional <grammarterm>
+                        sign</grammarterm> and the <grammarterm>digit</grammarterm> as a
+                        base 10 integer. Otherwise, the exponent <literal>e</literal> is
+                        0. The scaled value of the literal is <latexmath>s times 10^e</latexmath>
+                        for a <grammarterm>real-literal</grammarterm>.</para>
+                    <example>The <grammarterm>real-literal</grammarterm> <literal>124.7</literal>
+                        and <literal>1.247e2</literal> have the same value, as do <literal>
+                        0.005600</literal> and <literal>5.600E-3</literal>.</example>
+                    <para>If the scaled value is not in the range of representable
+                        values for its type, the program is ill-formed. Otherwise, the
+                        value of a <grammarterm>real-literal</grammarterm> is the scaled
+                        value if representable, else the larger or smaller representable
+                        value nearest the scaled value, chosen in an choice of larger or
+                        smaller value of <grammarterm>real-literal</grammarterm> manner.</para>
+                    <index-group category="real" term="type of" />
+                    <para>The type of an <grammarterm>real-literal</grammarterm> is <literal>
+                        Real</literal>.</para>
+                </index>
+            </section>
+            <section title="Character literals">
+                <index-group category="literal" term="character literal" />
+                <index term="character literal">
+                    <grammar term="character-literal">
+                        <alt>
+                            <quoted>&apos;</quoted>
+                            <term>verbatim-character</term>
+                            <quoted>&apos;</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>&apos;</quoted>
+                            <term>escape-sequence</term>
+                            <quoted>&apos;</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>&apos;</quoted>
+                            <term>unicode-character-notation</term>
+                            <quoted>&apos;</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="verbatim-character">
+                        <alt>
+                            <nobreak>any Unicode scaler value</nobreak>
+                        </alt>
+                    </grammar>
+                    <grammar term="escape-sequence">
+                        <altset>
+                            <alt>
+                                <quoted>&apos;</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>&quot;</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>\\</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>a</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>b</quoted>
+                            </alt>
+                        </altset>
+                        <altset>
+                            <alt>
+                                <quoted>f</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>n</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>r</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>t</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>v</quoted>
+                            </alt>
+                        </altset>
+                    </grammar>
+                    <grammar term="unicode-character-notation">
+                        <alt>
+                            <quoted>u</quoted>
+                            <term>hexadecimal-quadruple</term>
+                        </alt>
+                        <alt>
+                            <quoted>U</quoted>
+                            <term>hexadecimal-quadruple</term>
+                            <term>hexadecimal-quadruple</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="hexadecimal-quadruple">
+                        <alt>
+                            <term>hexadecimal-digit</term>
+                            <term>hexadecimal-digit</term>
+                            <term>hexadecimal-digit</term>
+                            <term>hexadecimal-digit</term>
+                        </alt>
+                    </grammar>
+                    <para>A character literal consists of exactly one Unicode scalar
+                        values enclosed in single quotation marks, as in <literal>
+                        &apos;a&apos;</literal>, and can include simple escape sequences
+                        (such as <literal>t</literal> for tab), hexadecimal, and Unicode
+                        escape sequences.</para>
+                    <para>A <index>Unicode scalar value</index> is any code point in the
+                        Unicode code space except for surrogate characters. The Unicode
+                        code space is the inclusive integer range <literal>0<sub>16</sub></literal>
+                        to <literal>10FFFF<sub>16</sub></literal>. Unicode surrogate
+                        characters are those code points in the inclusive integer range <literal>
+                        D800<sub>16</sub></literal> to <literal>DBFF<sub>16</sub></literal>
+                        and <literal>DC00<sub>16</sub></literal> to <literal>DFFF<sub>16</sub></literal>
+                        .</para>
+                    <para>A Unicode escape sequence begins, excluding Unicode character
+                        escape sequences, begins with a backslash and is followed by one
+                        of. The substitute characters are listed in <ref
+                            id="table:string-escape" />.</para>
+                    <table alignment="ll" id="table:string-escape">
+                        <row head="1">
+                            <cell>Escape Sequence</cell>
+                            <cell>Replacement</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>a</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+0007</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>b</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+0008</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>t</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+0009</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>n</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+000A</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>v</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+000B</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>f</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+000C</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>r</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+000D</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>&quot;</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+0022</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>&apos;</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+0027</literal>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <literal>\\</literal>
+                            </cell>
+                            <cell>
+                                <literal>U+005C</literal>
+                            </cell>
+                        </row>
+                    </table>
+                    <para>A Unicode character escape sequence begins with a <literal>u</literal>
+                        or <literal>U</literal> and is followed by four (4) or eight (8)
+                        hexidecimal digits, respectively. The sequence is replaced by
+                        the Unicode code point identified by the hexidecimal digits. It
+                        is erroneous if the code point is not a Unicode scalar value.</para>
+                </index>
+            </section>
+            <section title="String literals">
+                <grammar term="string-literal">
+                    <alt>
+                        <quoted>&quot;</quoted>
+                        <term>string-character-sequence</term>
+                        <quoted>&quot;</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>`</quoted>
+                        <term>verbatim-character-sequence</term>
+                        <quoted>`</quoted>
+                    </alt>
+                </grammar>
+                <grammar term="string-character-sequence">
+                    <alt>
+                        <term>string-character</term>
+                    </alt>
+                    <alt>
+                        <term>string-character</term>
+                        <term>string-character-sequence</term>
+                    </alt>
+                </grammar>
+                <grammar term="verbatim-character-sequence">
+                    <alt>
+                        <term>verbatim-character</term>
+                    </alt>
+                    <alt>
+                        <term>verbatim-character</term>
+                        <term>verbatim-character-sequence</term>
+                    </alt>
+                </grammar>
+                <grammar term="string-character">
+                    <alt>
+                        <term>verbatim-character</term>
+                    </alt>
+                    <alt>
+                        <term>escape-sequence</term>
+                    </alt>
+                    <alt>
+                        <term>unicode-character-notation</term>
+                    </alt>
+                    <alt>
+                        <term>interpolation-expression</term>
+                    </alt>
+                </grammar>
+                <grammar term="interpolation-expression">
+                    <alt>
+                        <quoted>{</quoted>
+                        <term>expression</term>
+                        <quoted>}</quoted>
+                    </alt>
+                </grammar>
+                <para>A string literal consists of zero or more Unicode scalar values
+                    enclosed in double quotation marks, as in <literal>&quot;hello&quot;</literal>,
+                    and can include simple escape sequences (such as <literal>t</literal>
+                    for tab), hexadecimal, and Unicode escape sequences.</para>
+                <para>A string literal may contain an <grammarterm>
+                    interpolation-expression</grammarterm> which is an <grammarterm>
+                    expression</grammarterm> evaluated at runtime and inserted into the
+                    string. This process is documented <ref
+                        id="interpolation-expression" />.</para>
+            </section>
+            <section title="Boolean literals">
+                <index-group category="literal" term="boolean" />
+                <index term="boolean literal">
+                    <grammar term="boolean-literal">
+                        <alt>
+                            <quoted>true</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>false</quoted>
+                        </alt>
+                    </grammar>
+                    <para>The type of an <grammarterm>boolean-literal</grammarterm> is <literal>
+                        Bool</literal>.</para>
+                </index>
+            </section>
+            <section title="Nil literal">
+                <index-group category="literal" term="nil" />
+                <index term="nil literal">
+                    <grammar term="nil-literal">
+                        <alt>
+                            <quoted>nil</quoted>
+                        </alt>
+                    </grammar>
+                    <para>The type of an <grammarterm>nil-literal</grammarterm>
+                        represents the absence of a value.</para>
+                </index>
+            </section>
+        </section>
+        <section title="Terminators">
+            <index term="terminators">
+                <para>Terminators delimit productions. Line terminators are commonly
+                    added to improve readability. Semicolon terminators terminates are
+                    useful for termining multiple statements on the same line.</para>
+                <grammar term="terminator">
+                    <alt>
+                        <term>line-term</term>
+                    </alt>
+                    <alt>
+                        <quoted>;</quoted>
+                    </alt>
+                </grammar>
+                <section title="Line terminators">
+                    <index term="line terminators">
+                        <para>Line terminators divide the characters of a Gear source
+                            file into lines. The productions defined by this
+                            specification do not neccessarily include explicit line
+                            terminators, however, one or more shall be implictly
+                            assumed: at the beginning and end of every compilation unit;
+                            after every keyword, operator or punctuator token.</para>
+                        <grammar term="line-term">
+                            <alt>
+                                <nobreak>line feed character <literal>U+000A</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>vertical tab character <literal>U+000B</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>form feed character <literal>U+000C</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>carriage return character <literal>U+000D</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>next line character <literal>U+0085</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>line separator character <literal>U+2028</literal></nobreak>
+                            </alt>
+                            <alt>
+                                <nobreak>paragraph separator character <literal>U+2029</literal></nobreak>
+                            </alt>
+                        </grammar>
+                        <para>For compatibility with <literal>CR+LF</literal> line
+                            endings, if a carriage return character (<literal>U+000D</literal>)
+                            is immediately succeeded by a line feed character (<literal>
+                            U+000A</literal>), then they shall be processed as if they
+                            were a single new line character.</para>
+                    </index>
+                </section>
+                <section title="Semicolon terminators">
+                    <para>The formal syntax uses the semicolon character (<literal>
+                        U+0042</literal>) as a terminator in a number of productions.
+                        Gear programs may substitute the semicolon for a line
+                        terminator.</para>
+                </section>
+            </index>
+        </section>
+        <section title="Compiler Control Statements">
+            <para>A compilation unit may optionally include zero or more compiler
+                control statements. A compiler control statement permits the compilation
+                unit to change aspects of the compiler’s behavior. Gear has three
+                compiler control statements: conditional compilation block, warning, and
+                error control statements.</para>
+            <para>Compiler control statements are processed with the same precedence as
+                strings and comments. Consequently, if a compiler control statement
+                appears within a string, it is considered part of the string literal.
+                Conversely, if such a statement is found within a comment, it is ignored
+                and does not influence the compilation process.</para>
+            <para>Compiler control statements must appear at the beginning of a line and
+                must start with a number sign (<literal>U+0023</literal>). The number
+                sign is followed by an identifier (together the <italic>control keyword</italic>
+                as listed in <ref id="control-keywords" /> that designates the type of
+                control statement.</para>
+            <grammar term="control-keywords">
+                <altset>
+                    <alt>
+                        <quoted>#if</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>#elif</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>#else</quoted>
+                    </alt>
+                </altset>
+                <altset>
+                    <alt>
+                        <quoted>#endif</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>#warning</quoted>
+                    </alt>
+                    <alt>
+                        <quoted>#error</quoted>
+                    </alt>
+                </altset>
+            </grammar>
+            <para>This specification describes the precise semantics of compiler control
+                statements in <ref id="statements" />.</para>
+        </section>
+    </index>
+</chapter>
+
+            <chapter title="Basic concepts">
+                <para>Program execution begins when the execution environment calls a function,
+                    which is referred to as the program&apos;s <ref id="entry-point">entry point</ref>
+                    .</para>
+                <para>During program execution instructions or statements are sequentially executed
+                    in the order they are written in the source code. This means that the first
+                    statement is executed first, followed by the second, and so on, until the end of
+                    the sequence is reached. At any given point, only one instruction or statement
+                    can be executed. There is no overlap or simultaneous execution of multiple
+                    instructions.</para>
+                <para>Sequential execution can be altered using <index>control flow</index>
+                    constructs such as conditionals (<literal>if</literal>, <literal>switch</literal>),
+                    loops (<literal>for</literal>, <literal>while</literal>), and function calls,
+                    which can change the order in which statements are executed.</para>
+                <para>Program termination occurs after the last instruction or statement of the <italic>entry
+                    point</italic> has executed or the code panics without handling the panic. When
+                    program termination occurs control is returned to the execution environment.</para>
+                <section title="Run-time panics">
+                    <para>Execution errors such as attempting to divide by zero trigger a <italic>run-time
+                        panic</italic> equivalent to a call of the built-in function <literal>panic</literal>
+                        with a value of the implementation-defined interface type <literal>std.Error</literal>.
+                        The exact error values that represent distinct run-time error conditions are
+                        unspecified.</para>
+                </section>
+            </chapter>
+            <chapter title="Types">
+                <para>A <index>type</index> determines a set of values together with operations and
+                    methods specific to those values. The types of the Gear language are divided
+                    into two main categories: reference types and value types. A reference type may
+                    be a <italic>generic type</italic>, which take one or more <italic>type
+                    parameters</italic>.</para>
+                <para>Value types differ from reference types in that variables of the value types
+                    directly contain their data, whereas variables of the reference types store <italic>
+                    references</italic> to their data. With reference types, it is possible for two
+                    variables to reference the same object, and thus possible for operations on one
+                    variable to affect the object referenced by the other variable. With value
+                    types, the variables each have their own copy of the data, and it is not
+                    possible for operations on one to affect the other. Value types may also have
+                    operators associated with them whereas reference types may not.</para>
+                <grammar term="type" id="type">
+                    <alt>
+                        <term>named-type</term>
+                    </alt>
+                    <alt>
+                        <term>function-type</term>
+                    </alt>
+                    <alt>
+                        <term>record-type</term>
+                    </alt>
+                    <alt>
+                        <term>optional-type</term>
+                    </alt>
+                </grammar>
+                <para>A type may be denoted by a <italic>type name</italic>, if it has one, which
+                    must be followed by type arguments if the type is generic. A type may also be
+                    specified using a <italic>type literal</italic>, which composes a type from
+                    existing types.</para>
+                <para>A type error occurs when a program construct cannot be assigned a type.</para>
+                <section title="Named types">
+                    <para>Named types are types declared with an <grammarterm>identifier</grammarterm>.
+                        The name of a type includes the modules it is declared in.</para>
+                    <example>The declaration <literal>class Person { name: String </literal>} would
+                        define a record type named Person, but the type in the variable declaration <literal>var
+                        person: { name: String </literal>} is not named.</example>
+                    <para>Value types are always named.</para>
+                </section>
+                <section title="Intrinsic types">
+                    <para>Intrinsic types are fundamental types directly supported by Gear and any
+                        underlying implementation. These types are always accessible and have
+                        operations that are also predefined.</para>
+                    <section title="Boolean types">
+                        <para>A <index>boolean type</index> represents the set of Boolean truth
+                            values denoted by the keywords <literal>true</literal> and <literal>
+                            false</literal>. The boolean type is <literal>Bool</literal>.</para>
+                        <para>Boolean types are value types.</para>
+                    </section>
+                    <section title="Integer types">
+                        <para>An <index>integer type</index> represents a continuous range of whole
+                            numbers without any fractional part. The minimum storage requirements
+                            for the integer type are <latexmath>2^{32}</latexmath> bits. The
+                            representable range of the integer type, and its underlying format, are
+                            implementation-defined.</para>
+                        <para>The integer type is named <literal>Int</literal>. Integers appear
+                            literally represented in source code according to the <grammarterm>
+                            integer-literal</grammarterm> grammar rule. Implementations must report
+                            an error or warning for integer literals outside the representable
+                            range. Implementations reporting a warning should clamp the integer to
+                            its minima or maxima.</para>
+                        <para>Integer types are value types.</para>
+                    </section>
+                    <section title="Real types">
+                        <para>A <index>real type</index> represents a finite approximation of whole
+                            and fractional numbers. The representable range and fractional precision
+                            of a real type, and its underlying format, are implementation-defined.</para>
+                        <para>The real type is named <literal>Real</literal>. Reals may be literally
+                            represented in source code according to the <grammarterm>real-literal</grammarterm>
+                            grammar rule. Implementations must report an error or warning for real
+                            literals outside the representable range. Implementations reporting a
+                            warning should clamp the real to its minima or maxima.</para>
+                        <para>Real types are value types.</para>
+                    </section>
+                    <section title="Character types">
+                        <para>A <index>character type</index> represents the set of Unicode scalar
+                            values. The character type is <literal>Char</literal>.</para>
+                        <para>Characters appear literally represented in source code according to
+                            the <grammarterm>real-literal</grammarterm> grammar rule.
+                            Implementations must report an error if a character literal describes a
+                            code point that is not a Unicode scalar value.</para>
+                        <para>Character types are value types.</para>
+                    </section>
+                    <section title="String types">
+                        <para>A <index>string type</index> represents an immutable collection of
+                            zero or more characters. The underlying representation is
+                            implementation-defined.</para>
+                        <para>The string type is <literal>String</literal>. Strings appear literally
+                            represented in source code according to the <grammarterm>string-literal</grammarterm>
+                            grammar rule.</para>
+                        <para>String types are value types.</para>
+                    </section>
+                </section>
+                <section title="Function types">
+                    <para>A <index>function type</index> denotes the set of all functions with the
+                        same parameter and result types.</para>
+                    <grammar term="function-type" id="function-type">
+                        <alt>
+                            <quoted>(</quoted>
+                            <opt-term>function-parameters</opt-term>
+                            <opt-term>function-return-type</opt-term>
+                            <quoted>)</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="function-parameters" id="function-parameters">
+                        <alt>
+                            <term>parameter</term>
+                            <quoted>,</quoted>
+                            <term>function-parameters</term>
+                        </alt>
+                        <alt>
+                            <term>parameter</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="parameter" id="parameter">
+                        <alt>
+                            <term>identifier</term>
+                            <quoted>:</quoted>
+                            <term>type</term>
+                        </alt>
+                        <alt>
+                            <term>identifier</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="function-return-type" id="function-return-type">
+                        <alt>
+                            <quoted>-&gt;</quoted>
+                            <term>type</term>
+                        </alt>
+                    </grammar>
+                    <para>It is erroneous for the last <grammarterm>parameter</grammarterm> in <grammarterm>
+                        function-parameters</grammarterm> to omit a <grammarterm>type</grammarterm>.
+                        The function type <literal>(a,b:Int)</literal> is valid, but <literal>
+                        (a:Int,b)</literal> is erroneous.</para>
+                </section>
+                <section title="Object types">
+                    <para>An object is a sequence of named elements, called fields, each of which
+                        has a name and a type. An object can have functions associated with it
+                        called <index>methods</index>.</para>
+                </section>
+                <section title="Optional types">
+                    <para>An <grammarterm>optional type</grammarterm> is a type constructor that
+                        encapsulates the possibility of a value being present or absent. It can
+                        contain a value of type <italic>T</italic> or represent the absence of a
+                        value by the special value <literal>nil</literal>.</para>
+                    <para>Optional types are denoted by appending a question mark (?) to an existing
+                        type. This syntax indicates that the type can either be a value of the
+                        specified type or represent the absence of a value.</para>
+                    <grammar term="optional-type">
+                        <alt>
+                            <term>type</term>
+                            <quoted>?</quoted>
+                        </alt>
+                    </grammar>
+                    <example>The type <literal>Int?</literal> represents a type that is either an
+                        integer or nil. The type <literal>Bool??</literal> represents an optional
+                        type that might contain another optional type which might contain a boolean.</example>
+                </section>
+                <section title="Parameterized Types">
+                    <para>Parameterized types, or <italic>generic types</italic>, take type
+                        parameters and create new types based on those parameters. Type constructors
+                        allow for parametric polymorphism, where the new type is generic and can be
+                        instantiated with different type arguments.</para>
+                    <para>Type constructors can take type parameters and create new types based on
+                        those parameters. </para>
+                    <para>Type parameters must be one of the following: named interface type, inline
+                        record type, inline function type, intersection type, or an alias type to
+                        any of the aformentioned types. When instantiating a generic type the type
+                        arguments can be any type except an optional type.</para>
+                </section>
+                <section title="Type compatibility">
+                    <para>Type compatibility refers to the rules or conditions under which a type <italic>
+                        T</italic> can be substituted for another type <italic>S</italic> without
+                        resulting in a compile-time error. There are two aspects to type
+                        compatibility: subtyping and type equivalence. Subtyping refers to a
+                        relationship where one type (the subtype) is considered to be a
+                        specialization of another type (the supertype). Type equivalence refers to
+                        whether two types are considered the same for the purposes of type checking.</para>
+                    <para>If type <italic>S</italic> is a subtype of type <italic>T</italic>
+                        (written as <italic>S&lt;:T</italic>), then values of type <italic>T</italic>
+                        may be replaced with values of type <italic>S</italic>. If type <italic>S</italic>
+                        is type equivalent to type <italic>T</italic> (written as <italic>S≡T</italic>),
+                        then values of type <italic>T</italic> may be replaced with values of type <italic>
+                        S</italic>.</para>
+                    <para>Type <italic>S</italic> may be type equivalent to type <italic>T</italic>
+                        by structural equivalence or nominal equivalence. When types are compared
+                        for structural equivalence it means equivalence is determined by the
+                        type&apos;s actual structure or definition and not by other characteristics
+                        such as its name. When types are compared for nominal equivalence it means
+                        equivalence is determined by the name of the types.</para>
+                    <para>Unless otherwise noted in this specification a type <italic>S</italic> and
+                        a type <italic>T</italic> are never type compatible.</para>
+                    <section title="Value types">
+                        <para>A value type <italic>T</italic> can be substituted for a value type <italic>
+                            S</italic> if all of the conditions apply:</para>
+                        <ul>
+                            <li><italic>S</italic> and <italic>T</italic> are named types</li>
+                            <li><italic>S</italic> and <italic>T</italic> name the same type</li>
+                        </ul>
+                    </section>
+                    <section title="Function types">
+                        <para>A function type may be defined with parameter types <latexmath>
+                            \{p_1,p_2,\ldots,p_n\}</latexmath> and return type <latexmath>R</latexmath>.
+                            Let <latexmath>P=\{p_1,p_2,\ldots,p_n\}</latexmath>. Given a function
+                            type <italic>F</italic> denote its parameter types with <latexmath>F_P</latexmath>
+                            and its return type with <latexmath>F_R</latexmath>.</para>
+                        <para>A function type <italic>T</italic> can be substituted for another
+                            function type <italic>S</italic> if all of the conditions apply:</para>
+                        <ul>
+                            <li><italic>S</italic> and <italic>T</italic> have the same arity</li>
+                            <li><italic>T<sub>P</sub></italic> &lt;: <italic>S<sub>P</sub></italic></li>
+                            <li><italic>S<sub>R</sub></italic> &lt;: <italic>T<sub>R</sub></italic></li>
+                        </ul>
+                    </section>
+                    <section title="Object types">
+                        <para>When an object type is a value type it must conform to the type
+                            compatibility rules for value types. The remainder of this seciton
+                            defines type compatibility for when an object type is a reference type.</para>
+                        <para>An object type may be defined with members <latexmath>
+                            \{m_1,m_2,\ldots,m_n\}</latexmath>. Let <latexmath>
+                            M=\{m_1,m_2,\ldots,m_n\}</latexmath>. Given a object type <italic>R</italic>
+                            denote its members types with <latexmath>R_M</latexmath>.</para>
+                        <para>Formally, an object type <italic>T</italic> can be substituted for
+                            another object type <italic>S</italic> if all of the conditions apply:</para>
+                        <ul>
+                            <li><italic>S<sub>M</sub></italic> ⊆ <italic>T<sub>M</sub></italic></li>
+                            <li><italic>S<sub>M</sub></italic> ≡ <italic>T<sub>M</sub></italic></li>
+                        </ul>
+                    </section>
+                    <section title="Parameterized Types">
+                        <para>TODO: Generic parameters must be structurally (or even nominally)
+                            equivalent. You can&apos;t do the String[] to Object[] thing like in C#
+                            because it is type unsafe (see wiki page on variance).</para>
+                    </section>
+                </section>
+                <section title="Boxing and unboxing">
+                    <para>Boxing refers to copying a value of a value type into a new value that is
+                        a reference type.</para>
+                    <section title="Boxing conventions">
+                        <para>
+                            A boxing conversion permits a value type to be implicitly converted to
+                            a reference type. The following boxing conversions exist: From any value
+                            type to a variance-convertible reference type:
+                            https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/conversions#1029-boxing-conversions</para>
+                    </section>
+                    <section title="Unboxing conventions">
+                        <para>
+                            An unboxing conversion permits a reference type to be implicitly
+                            converted to a value type. The following unboxing conversions exist:
+                            From any generic value type `V₀` to a value type `V`. An unboxing
+                            conversion permits a reference type to be explicitly converted to a
+                            value type.
+                            https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/conversions#1037-unboxing-conversions</para>
+                    </section>
+                </section>
+            </chapter>
+            <chapter title="Identifiers and scope" id="scope">
+                <para><italic>Identifiers</italic> are names used to identify variables, functions,
+                    types, and other named entities within the language. An identifier serves as a
+                    symbolic name that binds to a specific entity in the language, allowing
+                    programmers to reference and manipulate that entity throughout the code. An
+                    identifier is entered in source code using the <grammarterm>identifier</grammarterm>
+                    lexical token.</para>
+                <para><index>Name binding</index> refers to the association of an identifier with an
+                    entity, such as data or code. Name binding establishes a relationship where the
+                    identifier acts as a reference to the underlying entity.</para>
+                <para>“Scope” refers to the set of all name bindings that are valid within a part of
+                    a program or at a given point in a program. Scope is determined by the lexical
+                    structure of the code. Lexical scoping is the mechanism used to determine the
+                    visibility and lifetime of identifiers based on the program&apos;s textual
+                    structure. Under lexical scoping, the scope of an identifier is determined by
+                    its position in the source code and the nesting of code blocks, rather than the
+                    execution flow.</para>
+                <para>A <index>declaration</index> creates a name binding to a constant, type, type
+                    parameter, variable, function, or module. Every identifier in a program must be
+                    declared. No identifier may be declared twice in the same scope.</para>
+                <section title="Block scope" id="block">
+                    <para>A <index>block</index> is a possibly empty sequence of declarations and
+                        statements within matching brace brackets. Each block defines a new scope.</para>
+                    <para>When a block is declared in another block the former is referred to as the <italic>inner
+                        block</italic> and the latter is the <italic>outer block</italic>. An
+                        identifier declared in an outer block is visible to all inner (nested)
+                        blocks if its declaration precedes the inner block declaration in the
+                        textual order of the code.</para>
+                    <grammar term="Block">
+                        <alt>
+                            <quoted>{</quoted>
+                            <term>StatementList</term>
+                            <quoted>}</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="StatementList">
+                        <alt>
+                            <term>Statement</term>
+                            <quoted>;</quoted>
+                        </alt>
+                        <alt>
+                            <term>Statement</term>
+                            <quoted>;</quoted>
+                            <term>StatementList</term>
+                        </alt>
+                    </grammar>
+                </section>
+                <section title="Module scope">
+                    <para>TODO: Explain what it is...</para>
+                    <para>Declarations outside any block occur at module scope.</para>
+                </section>
+                <section title="Identifier resolution">
+                    <para>TODO: Put algorithm here for identifier resolution accounting for the
+                        current block scope and then module scopes.</para>
+                    <para>TODO: Mention shadowing? Maybe not. It can be implied from the spec.</para>
+                    <latexbigmath>IdRes(id,scope) = \begin{cases}
+                        id &amp; \text{if } id \in scope, \\
+                        IdRes(id,ParentScope(scope)) &amp; \text{if } id \notin scope.
+                        \end{cases}
+</latexbigmath>
+                </section>
+            </chapter>
+            <chapter title="Expressions">
+                <para>An expression specifies the computation of a value by applying operators and
+                    functions to operands.</para>
+                <section title="Assignment">
+                    <para>An <italic>assignment</italic> replaces the current value stored in a <grammarterm>
+                        identifier</grammarterm> with a new value specified by an <grammarterm>
+                        expression</grammarterm>. An assignment statement may assign a single value
+                        to a single variable, or multiple values to a matching number of variables.</para>
+                    <grammar term="assignment-expression">
+                        <alt>
+                            <term>identifier</term>
+                            <quoted>=</quoted>
+                            <term>expression</term>
+                        </alt>
+                    </grammar>
+                </section>
+                <section title="Operators">
+                    <para>Expressions are constructed from operands and operators. The operators of
+                        an expression indicate which operations to apply to the operands. Examples
+                        of operators include <literal>+</literal>, <literal>-</literal>, <literal>*</literal>,
+                        and <literal>/</literal>. Examples of operands include literals, fields,
+                        local variables, and expressions.</para>
+                    <para>There are three kinds of operators:</para>
+                    <ul>
+                        <li>Unary operators. The unary operators take one operand and use either
+                            prefix notation (such as <literal>-x</literal>) or postfix notation
+                            (such as <literal>x++</literal>).</li>
+                        <li>Binary operators. The binary operators take two operands and all use
+                            infix notation (such as <literal>x + y</literal>)</li>
+                        <li>Ternary operator. Only one ternary operator, <literal>?:</literal>,
+                            exists; it takes three operands and uses infix notation <literal>(c ? x
+                            : y)</literal>.</li>
+                    </ul>
+                    <para>The order of evaluation of operators in an expression is determined by the <italic>
+                        precedence</italic> and <italic>associativity</italic> of the operators.</para>
+                    <para>The order in which operands in an expression are evaluated, is left to
+                        right.</para>
+                    <para>Certain operators can be overloaded. Operator overloading permits
+                        user-defined operator implementations to be specified for operations where
+                        one or both of the operands are of a user-defined class or struct type.</para>
+                </section>
+                <section title="Operator precedence and associativity">
+                    <para>When an expression contains multiple operators, the <italic>precedence</italic>
+                        of the operators controls the order in which the individual operators are
+                        evaluated. The precedence of an operator is established by the definition of
+                        its associated grammar production.</para>
+                    <para>The following table summarizes all operators in order of precedence from
+                        highest to lowest:</para>
+                    <para>TODO: Insert precedence table!</para>
+                    <para>When an operand occurs between two operators with the same precedence, the <italic>
+                        associativity</italic> of the operators controls the order in which the
+                        operations are performed. All operators are <italic>left-associative</italic>,
+                        meaning that operations are performed from left to right.</para>
+                    <para>Precedence and associativity can be controlled using parentheses.</para>
+                    <example>The expression <literal>x + y * z</literal> first multiplies <literal>y</literal>
+                        by <literal>z</literal> and then adds the result to <literal>x</literal>,
+                        but <literal>(x + y) * z</literal> first adds <literal>x</literal> and <literal>
+                        y</literal> and then multiplies the result by <literal>z</literal>.</example>
+                </section>
+                <section title="Primary expressions">
+                    <para>Primary expressions include every form of expression.</para>
+                    <grammar term="primary-expression">
+                        <alt>
+                            <term>expression</term>
+                        </alt>
+                        <alt>
+                            <term>record-creation-expression</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="expression">
+                        <alt>
+                            <term>literal</term>
+                        </alt>
+                        <alt>
+                            <term>simple-name</term>
+                        </alt>
+                        <alt>
+                            <term>member-access</term>
+                        </alt>
+                        <alt>
+                            <term>invocation-expression</term>
+                        </alt>
+                    </grammar>
+                    <para>Primary expressions are divided between <grammarterm>expressions</grammarterm>
+                        and <grammarterm>record-creation-expressions</grammarterm>. Treating <grammarterm>
+                        record-creation-expression</grammarterm> in this way, rather than listing it
+                        along with the other expression forms, enables the grammar to disallow
+                        potentially confusing code such as</para>
+                    <code>if x {
+                        }
+</code>
+                    <para>which could be interpreted as an “if” statement with a conditional <literal>
+                        x</literal> and an empty <ref id="block">block</ref> or as an incomplete
+                        “if” statement where the condition expression constructs a record named <literal>
+                        x</literal> with default field initialization.</para>
+                </section>
+                <grammar term="assignment-operator" id="assignment-operator">
+                    <altset>
+                        <alt>
+                            <quoted>=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>+=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>-=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>*=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>/=</quoted>
+                        </alt>
+                    </altset>
+                    <altset>
+                        <alt>
+                            <quoted>|=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>&lt;&lt;=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>&gt;&gt;=</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>^=</quoted>
+                        </alt>
+                    </altset>
+                </grammar>
+                <grammar term="expression" id="expression">
+                    <alt>
+                        <term>unary-expression</term>
+                    </alt>
+                    <alt>
+                        <term>binary-expression</term>
+                    </alt>
+                    <alt>
+                        <term>tertiary-expression</term>
+                    </alt>
+                </grammar>
+                <grammar term="unary-expression" id="unary-expression">
+                    <alt>
+                        <quoted>+</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <quoted>-</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <quoted>~</quoted>
+                        <term>expression</term>
+                    </alt>
+                </grammar>
+                <grammar term="binary-expression" id="binary-expression">
+                    <alt>
+                        <term>expression</term>
+                        <quoted>+</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>-</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>*</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>/</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>||</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>&lt;&lt;</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>&gt;&gt;</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>|</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>^</quoted>
+                        <term>expression</term>
+                    </alt>
+                    <alt>
+                        <term>expression</term>
+                        <quoted>?:</quoted>
+                        <term>expression</term>
+                    </alt>
+                </grammar>
+                <grammar term="tertiary-expression" id="tertiary-expression">
+                    <alt>
+                        <term>expression</term>
+                        <quoted>?</quoted>
+                        <term>expression</term>
+                        <quoted>:</quoted>
+                        <term>expression</term>
+                    </alt>
+                </grammar>
+                <section title="Objects">
+                    <para>Anonymous objects types can be declared and instantiated using the <literal>
+                        class</literal> keyword. Methods implictly receive the object instance
+                        through the contextual keyword: Low Line (U+005F) character.</para>
+                </section>
+                <section title="Try">
+                    <para>Here <literal>try</literal> is a unary operator.</para>
+                    <grammar term="try-expression">
+                        <alt>
+                            <quoted>try</quoted>
+                            <term>expression</term>
+                        </alt>
+                        <alt>
+                            <quoted>try</quoted>
+                            <quoted>!</quoted>
+                            <term>expression</term>
+                        </alt>
+                    </grammar>
+                </section>
+                <section title="Try-else">
+                    <para>Here a <literal>try-else</literal> is a binary operation accepting two
+                        operands: the first expression which might error and the second expression
+                        which is returned if the function does here.</para>
+                    <grammar term="try-else-expr">
+                        <alt>
+                            <quoted>try</quoted>
+                            <term>expression</term>
+                            <quoted>else</quoted>
+                            <term>expression</term>
+                        </alt>
+                    </grammar>
+                </section>
+                <section title="Catch">
+                    <para>Here <literal>block</literal> will be entered if <grammarterm>expression</grammarterm>
+                        errors. If <literal>block</literal> does not return control and <grammarterm>
+                        expression</grammarterm> errors, then <literal>nil</literal> is returned.</para>
+                    <grammar term="catch-expr">
+                        <alt>
+                            <term>expression</term>
+                            <quoted>catch</quoted>
+                            <opt-quoted>identifier</opt-quoted>
+                            <term>block</term>
+                        </alt>
+                    </grammar>
+                </section>
+            </chapter>
+            <chapter title="Statements" id="statements">
+                <index term="statements">
+                    <para>In Gear, there are three kinds of statements: simple statements, compiler
+                        control statements, and control flow statements. Simple statements are the
+                        most common and consist of either an expression or a declaration. Compiler
+                        control statements allow the program to change aspects of the compiler’s
+                        behavior and include a conditional compilation block and a line control
+                        statement.</para>
+                    <para>Control flow statements are used to control the flow of execution in a
+                        program. There are several types of control flow statements in Swift,
+                        including loop statements, branch statements, and control transfer
+                        statements. Loop statements allow a block of code to be executed repeatedly,
+                        branch statements allow a certain block of code to be executed only when
+                        certain conditions are met, and control transfer statements provide a way to
+                        alter the order in which code is executed. In addition, Gear provides a
+                        defer statement for running cleanup actions just before the current scope
+                        exits.</para>
+                    <grammar term="statement">
+                        <alt>
+                            <term>selection-statement</term>
+                        </alt>
+                        <alt>
+                            <term>control-statement</term>
+                        </alt>
+                    </grammar>
+                    <para>A semicolon (;) can optionally appear after any statement and is used to
+                        separate multiple statements if they appear on the same line.</para>
+                    <section title="Selection statements">
+                        <para>Selection statements allow the program to execute certain blocks of
+                            code depending on the value of one or more conditions. The values of the
+                            conditions specified in a selection statement control how the program
+                            branches and, therefore, what block of code is executed. Gear has two
+                            selection statements: an <literal>if</literal> statement and a <literal>
+                            switch</literal> statement.</para>
+                        <grammar term="selection-statement">
+                            <alt>
+                                <term>if-statement</term>
+                            </alt>
+                            <alt>
+                                <term>switch-statement</term>
+                            </alt>
+                        </grammar>
+                        <section title="If statement">
+                            <para>“If” statements specify the conditional execution of two blocks
+                                according to the value of a boolean expression. If the expression
+                                evaluates to bold{true}, the “if” block is executed, otherwise, if
+                                present, the “else” block is executed.</para>
+                            <para>If the “if” statement is of the form <literal>if var</literal>,
+                                then conditional execution is determined by whether the variables
+                                are non-null. A variable declared with an explicit type annotation
+                                is matched according to the <ref id="pattern-matching">pattern
+                                matching</ref> rules.</para>
+                            <grammar term="if-statement">
+                                <alt>
+                                    <quoted>if</quoted>
+                                    <term>expression</term>
+                                    <term>block</term>
+                                    <opt-term>else-block</opt-term>
+                                </alt>
+                                <alt>
+                                    <quoted>if</quoted>
+                                    <quoted>var</quoted>
+                                    <term>variable-pattern</term>
+                                    <term>block</term>
+                                    <opt-term>else-block</opt-term>
+                                </alt>
+                            </grammar>
+                            <grammar term="else-block">
+                                <alt>
+                                    <quoted>else</quoted>
+                                    <term>if-statement</term>
+                                </alt>
+                                <alt>
+                                    <quoted>else</quoted>
+                                    <term>block</term>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>if</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>The <grammarterm>expression</grammarterm> is evaluated.</li>
+                                <li>If <grammarterm>expression</grammarterm> yields <literal>true</literal>,
+                                    control is transferred to <grammarterm>block</grammarterm>.</li>
+                                <li>If <grammarterm>expression</grammarterm> yields <literal>false</literal>,
+                                    control is transferred to the optional <literal>else</literal>
+                                    which may be another “if” statement or the “else” block.</li>
+                            </ul>
+                        </section>
+                        <section title="Switch statement">
+                            <para>“Switch” statements provide multi-way execution. An expression or
+                                type is compared to the &quot;cases&quot; inside the
+                                &quot;switch&quot; to determine which branch to execute. If no case
+                                matches and there is a &quot;default&quot; case, its statements are
+                                executed. There can be at most one default case and it may appear
+                                anywhere in the &quot;switch&quot; statement.</para>
+                            <grammar term="switch-statement">
+                                <alt>
+                                    <quoted>switch</quoted>
+                                    <term>expression</term>
+                                    <opt-term>switch-case-sequence</opt-term>
+                                </alt>
+                            </grammar>
+                            <grammar term="switch-case-sequence">
+                                <alt>
+                                    <term>switch-case</term>
+                                </alt>
+                                <alt>
+                                    <term>switch-case</term>
+                                    <term>switch-case-sequence</term>
+                                </alt>
+                            </grammar>
+                            <grammar term="switch-case">
+                                <alt>
+                                    <quoted>case</quoted>
+                                    <term>expression</term>
+                                    <quoted>:</quoted>
+                                    <term>block</term>
+                                </alt>
+                                <alt>
+                                    <quoted>default</quoted>
+                                    <quoted>:</quoted>
+                                    <term>block</term>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>switch</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>The switch <grammarterm>expression</grammarterm> is evaluated.</li>
+                                <li>If the switch <grammarterm>expression</grammarterm> yields a
+                                    value that matches a case <grammarterm>expression</grammarterm>,
+                                    control is transferred to its <grammarterm>block</grammarterm>.</li>
+                                <li>If the switch <grammarterm>expression</grammarterm> yields a
+                                    value that does not match any case <grammarterm>expression</grammarterm>,
+                                    control is transferred to the optional <literal>default</literal>.
+                                    If there is no optional <literal>default</literal>, control is
+                                    transferred to the end point of the <literal>switch</literal>
+                                    statement.</li>
+                            </ul>
+                        </section>
+                    </section>
+                    <section title="Iteration statement">
+                        <para>Iteration statements repeatedly execute a block.</para>
+                        <grammar term="iteration-statement">
+                            <alt>
+                                <term>while-statement</term>
+                            </alt>
+                            <alt>
+                                <term>do-statement</term>
+                            </alt>
+                            <alt>
+                                <term>for-statement</term>
+                            </alt>
+                        </grammar>
+                        <section title="While statement">
+                            <para>The “while” statement conditionally executes a block zero or more
+                                times.</para>
+                            <grammar term="while-statement">
+                                <alt>
+                                    <quoted>while</quoted>
+                                    <term>expression</term>
+                                    <term>block</term>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>while</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>The <grammarterm>expression</grammarterm> is evaluated.</li>
+                                <li>If <grammarterm>expression</grammarterm> yields <literal>true</literal>,
+                                    control is transferred to the <grammarterm>block</grammarterm>.
+                                    When and if control reaches the end point of the block (possibly
+                                    from execution of a continue statement), control is transferred
+                                    to the beginning of the <literal>while</literal> statement.</li>
+                                <li>If <grammarterm>expression</grammarterm> yields <literal>false</literal>,
+                                    control is transferred to the end point of the <literal>while</literal>
+                                    statement.</li>
+                            </ul>
+                            <para>Within the <grammarterm>block</grammarterm> of a <literal>while</literal>
+                                statement, a <literal>break</literal> statement may be used to
+                                transfer control to the end point of the <literal>while</literal>
+                                statement (thus ending iteration of the <grammarterm>block</grammarterm>),
+                                and a <literal>continue</literal> statement may be used to transfer
+                                control to the end point of the <grammarterm>block</grammarterm>
+                                statement (thus performing another iteration of the <literal>while</literal>
+                                statement).</para>
+                        </section>
+                        <section title="Do statement">
+                            <para>The “do” statement conditionally executes a block zero or more
+                                times.</para>
+                            <grammar term="do-statement">
+                                <alt>
+                                    <quoted>do</quoted>
+                                    <term>block</term>
+                                    <quoted>while</quoted>
+                                    <term>expression</term>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>do</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>Control is transferred to the <grammarterm>block</grammarterm>.</li>
+                                <li>When and if control reaches the end point of the <grammarterm>
+                                    block</grammarterm> (possibly from execution of a <literal>
+                                    continue</literal> statement), the <grammarterm>expression</grammarterm>is
+                                    evaluated. If the <grammarterm>expression</grammarterm> yields <literal>
+                                    true</literal>, control is transferred to the beginning of the <literal>
+                                    do</literal> statement. Otherwise, control is transferred to the
+                                    end point of the <literal>do</literal> statement.</li>
+                                <li>Within the <grammarterm>block</grammarterm> of a <literal>do</literal>
+                                    statement, a <literal>break</literal> statement may be used to
+                                    transfer control to the end point of the <literal>do</literal>
+                                    statement (thus ending iteration of the <grammarterm>block</grammarterm>),
+                                    and a <literal>continue</literal> statement may be used to
+                                    transfer control to the end point of the <grammarterm>block</grammarterm>
+                                    (thus performing another iteration of the <literal>do</literal>
+                                    statement).</li>
+                            </ul>
+                        </section>
+                        <section title="For statement">
+                            <para>The “for” statement executes a block of code for any object that
+                                conforms to the <literal>Sequence</literal> protocol.</para>
+                            <grammar term="for-statement">
+                                <alt>
+                                    <quoted>for</quoted>
+                                    <term>identifier</term>
+                                    <quoted>in</quoted>
+                                    <term>expression</term>
+                                    <term>block</term>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>for</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>The <grammarterm>expression</grammarterm> is evaluated.</li>
+                                <li>If <grammarterm>expression</grammarterm> yields an iterator
+                                    object conforming to the <literal>Sequence</literal> protocol,
+                                    control is transferred to the <literal>next()</literal> method
+                                    of the iterator object. If the value returned by <literal>next()</literal>
+                                    isn’t <grammarterm>nil</grammarterm>, it’s assigned to the <grammarterm>
+                                    identifier</grammarterm> pattern and control is transferred to
+                                    the <grammarterm>block</grammarterm>. If the value returned by <literal>
+                                    next()</literal> is <grammarterm>nil</grammarterm>, control is
+                                    transferred to the end point of the <literal>for</literal>
+                                    statement.</li>
+                                <li>When and if control reaches the end point of the <grammarterm>
+                                    block</grammarterm> (possibly from execution of a <literal>
+                                    continue</literal> statement), the <literal>next()</literal>
+                                    method of the iterator object is evaluated again (thus
+                                    performing another iteration of the <literal>for</literal>
+                                    statement).</li>
+                            </ul>
+                        </section>
+                    </section>
+                    <section title="Jump statements">
+                        <para>Jump statements unconditionally transfer control.</para>
+                        <grammar term="jump-statement">
+                            <alt>
+                                <term>break-statement</term>
+                            </alt>
+                            <alt>
+                                <term>continue-statement</term>
+                            </alt>
+                            <alt>
+                                <term>return-statement</term>
+                            </alt>
+                        </grammar>
+                        <para>The location to which a jump statement transfers control is called the <italic>
+                            target</italic> of the jump statement</para>
+                        <para>When a jump statement occurs within a <ref id="block">block</ref>, and
+                            the target of that jump statement is outside that block, the jump
+                            statement is said to <italic>exit</italic> the block. While a jump
+                            statement may transfer control out of a block, it can never transfer
+                            control into a block</para>
+                        <section title="Break statement">
+                            <para>The “break” statement exits the nearest enclosing <literal>switch</literal>
+                                , <literal>while</literal>, <literal>do</literal>, or <literal>for</literal>
+                                statement.</para>
+                            <grammar term="jump-statement">
+                                <alt>
+                                    <quoted>break</quoted>
+                                    <quoted>;</quoted>
+                                </alt>
+                            </grammar>
+                            <para>The target of a <literal>break</literal> statement is the end
+                                point of the nearest enclosing <literal>switch</literal>, <literal>
+                                while</literal>, <literal>do</literal>, or <literal>for</literal>
+                                statement. If a <literal>break</literal> statement is not enclosed
+                                by a <literal>switch</literal>, <literal>while</literal>, <literal>
+                                do</literal>, or <literal>for</literal> statement, a compile-time
+                                error occurs.</para>
+                            <para>When multiple <literal>switch</literal>, <literal>while</literal>, <literal>
+                                do</literal>, or <literal>for</literal> statements are nested within
+                                each other, a <literal>break</literal>statement applies only to the
+                                innermost statement.</para>
+                            <para>A <literal>break</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>Control is transferred to the target of the <literal>break</literal>
+                                    statement.</li>
+                            </ul>
+                            <para>Because a <literal>break</literal> statement unconditionally
+                                transfers control elsewhere, the end point of a <literal>break</literal>
+                                statement is never reachable</para>
+                        </section>
+                        <section title="Continue statement">
+                            <para>The “continue” statement starts a new iteration of the nearest
+                                enclosing <literal>switch</literal>, <literal>while</literal>, <literal>
+                                do</literal>, or <literal>for</literal> statement.</para>
+                            <grammar term="continue-statement">
+                                <alt>
+                                    <quoted>continue</quoted>
+                                    <quoted>;</quoted>
+                                </alt>
+                            </grammar>
+                            <para>The target of a <literal>continue</literal> statement is the end
+                                point of the <ref id="block">block</ref> statement of the nearest
+                                enclosing <literal>while</literal>, <literal>do</literal>, or <literal>
+                                for</literal> statement. If a <literal>continue</literal> statement
+                                is not enclosed by a <literal>while</literal>, <literal>do</literal>,
+                                or <literal>for</literal> statement, a compile-time error occurs.</para>
+                            <para>When multiple <literal>while</literal>, <literal>do</literal>, or <literal>
+                                for</literal> statements are nested within each other, a <literal>
+                                continue</literal>statement applies only to the innermost statement.</para>
+                            <para>A <literal>continue</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>Control is transferred to the target of the <literal>continue</literal>
+                                    statement.</li>
+                            </ul>
+                            <para>Because a <literal>continue</literal> statement unconditionally
+                                transfers control elsewhere, the end point of a <literal>continue</literal>
+                                statement is never reachable.</para>
+                        </section>
+                        <section title="Return statement">
+                            <para>The “return” statement returns control to the caller of the
+                                function member in which the <literal>return</literal> statement
+                                appears.</para>
+                            <grammar term="return-statement">
+                                <alt>
+                                    <quoted>return</quoted>
+                                    <opt-term>expression</opt-term>
+                                    <quoted>;</quoted>
+                                </alt>
+                            </grammar>
+                            <para>A <literal>return</literal> statement with no <grammarterm>
+                                expression</grammarterm> can be used only in a function that does
+                                not compute a value; that is, a function with the return type <literal>
+                                void</literal>.</para>
+                            <para>A <literal>return</literal> statement with an <grammarterm>
+                                expression</grammarterm> can only be used in a function that
+                                computes a value; that is, a function with a non-void return type.</para>
+                            <para>A <literal>return</literal> statement is executed as follows:</para>
+                            <ul>
+                                <li>If the <literal>return</literal> statement specifies an <grammarterm>
+                                    expression</grammarterm>, the expression is evaluated and the
+                                    resulting value is converted to the return type of the
+                                    containing function member by an implicit conversion. The result
+                                    of the conversion becomes the value returned to the caller.</li>
+                                <li>Control is returned to the caller of the containing function
+                                    member.</li>
+                            </ul>
+                            <para>Because a <literal>return</literal> statement unconditionally
+                                transfers control elsewhere, the end point of a <literal>return</literal>
+                                statement is never reachable.</para>
+                        </section>
+                    </section>
+                    <section title="Defer statements">
+                        <para>A “defer” statement evaluates an <grammarterm>expression</grammarterm>
+                            or <grammarterm>block</grammarterm> whose execution is deferred to the
+                            moment the enclosing <ref id="block">block</ref> exits, either because
+                            the enclosing block executed a <literal>return</literal> statement, a <literal>
+                            break</literal> statement, a <literal>continue</literal> statement, or
+                            control reached the end of its block, or because the corresponding
+                            thread panicked.</para>
+                        <grammar term="defer-statement">
+                            <alt>
+                                <quoted>defer</quoted>
+                                <term>expression</term>
+                                <quoted>;</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>defer</quoted>
+                                <term>block</term>
+                                <quoted>;</quoted>
+                            </alt>
+                        </grammar>
+                        <para>A <literal>defer</literal> statement is executed as follows:</para>
+                        <ul>
+                            <li>The <literal>defer</literal> statement is executed the moment the
+                                enclosing <ref id="block">block</ref> exits.</li>
+                            <li>If there is more than one <literal>defer</literal> statement in the
+                                enclosing <grammarterm>block</grammarterm>, they are evaluated in
+                                the reverse order of their position in the source code.</li>
+                            <li>If control never reaches the <literal>defer</literal> statement,
+                                then the <grammarterm>expression</grammarterm> or <grammarterm>block</grammarterm>
+                                is not executed.</li>
+                        </ul>
+                        <para>If a <grammarterm>block</grammarterm> contains a <grammarterm>return</grammarterm>
+                            statement, then a compile-time error occurs.</para>
+                    </section>
+                    <section title="Use statements">
+                        <para>A “use” statement facilitate the use of modules, types, and variables
+                            defined in other modules.</para>
+                        <grammar term="use-statement">
+                            <alt>
+                                <quoted>use</quoted>
+                                <term>full-module-name</term>
+                                <quoted>.*</quoted>
+                            </alt>
+                            <alt>
+                                <quoted>use</quoted>
+                                <term>full-module-name</term>
+                            </alt>
+                        </grammar>
+                        <grammar term="module-member-list">
+                            <alt>
+                                <term>module-member</term>
+                                <quoted>,</quoted>
+                                <term>module-member-list</term>
+                            </alt>
+                            <alt>
+                                <term>module-member</term>
+                            </alt>
+                        </grammar>
+                        <grammar term="module-member">
+                            <alt>
+                                <term>identifier</term>
+                                <quoted>as</quoted>
+                                <term>identifier</term>
+                            </alt>
+                            <alt>
+                                <term>identifier</term>
+                            </alt>
+                        </grammar>
+                        <grammar term="full-module-name">
+                            <alt>
+                                <term>identifier</term>
+                                <quoted>.</quoted>
+                                <term>full-module-name</term>
+                            </alt>
+                            <alt>
+                                <term>identifier</term>
+                            </alt>
+                        </grammar>
+                    </section>
+                    <section title="Compiler control statements">
+                        <index term="compiler control statements">
+                            <para>A compiler control statement allow the program to change aspects
+                                of the compiler’s behavior. Gear has three compiler control
+                                statements: a conditional compilation block, a warning and error
+                                control statements.</para>
+                            <grammar term="control-statement">
+                                <alt>
+                                    <quoted>conditional-control</quoted>
+                                </alt>
+                                <alt>
+                                    <quoted>warning-control</quoted>
+                                </alt>
+                                <alt>
+                                    <quoted>error-control</quoted>
+                                </alt>
+                            </grammar>
+                            <grammar term="conditional-control">
+                                <alt>
+                                    <quoted>#if</quoted>
+                                </alt>
+                                <alt>
+                                    <quoted>#elif</quoted>
+                                </alt>
+                                <alt>
+                                    <quoted>#else</quoted>
+                                </alt>
+                                <alt>
+                                    <quoted>#endif</quoted>
+                                </alt>
+                            </grammar>
+                            <grammar term="warning-control">
+                                <alt>
+                                    <quoted>#warning</quoted>
+                                    <term>string-literal</term>
+                                </alt>
+                            </grammar>
+                            <grammar term="warning-control">
+                                <alt>
+                                    <quoted>#error</quoted>
+                                    <term>string-literal</term>
+                                </alt>
+                            </grammar>
+                            <section title="Conditional compilation block">
+                                <index term="conditional compilation block">
+                                    <para>Every conditional compilation block begins with the <literal>
+                                        #if</literal> compilation directive and ends with the <literal>
+                                        #endif</literal> compilation directive. A simple conditional
+                                        compilation block has the following form:</para>
+                                    <grammar term="cc-block">
+                                        <alt>
+                                            <quoted>#if</quoted>
+                                            <term>compiler-condition</term>
+                                            <term>terminator</term>
+                                            <term>statements</term>
+                                            <term>terminator</term>
+                                            <quoted>#endif</quoted>
+                                        </alt>
+                                    </grammar>
+                                    <para>Unlike the condition of an <literal>if</literal>
+                                        statement, the compilation condition is evaluated at compile
+                                        time. As a result, the statements are compiled and executed
+                                        only if the compilation condition evaluates to true at
+                                        compile time. Tokens enclosed by a conditional compilation
+                                        block are either included or excluded from compilation
+                                        depending upon whehter the condition is true or false,
+                                        respectivly. Tokens excluded from compilation are eneither
+                                        parsed nor semanticly analyzied, and no diagnostic message
+                                        are generated for them.</para>
+                                </index>
+                            </section>
+                        </index>
+                    </section>
+                </index>
+            </chapter>
+            <chapter title="Declarations">
+                <para>A declaration binds an identifier to a constant, type, type parameter,
+                    variable, function, or module. Every identifier in a program must be declared.
+                    No identifier may be declared twice in the same block.</para>
+                <grammar term="declarations">
+                    <alt>
+                        <term>class-decl</term>
+                    </alt>
+                    <alt>
+                        <term>struct-decl</term>
+                    </alt>
+                    <alt>
+                        <term>interface-decl</term>
+                    </alt>
+                    <alt>
+                        <term>function-decl</term>
+                    </alt>
+                    <alt>
+                        <term>typealias-decl</term>
+                    </alt>
+                    <alt>
+                        <term>module-decl</term>
+                    </alt>
+                    <alt>
+                        <term>variable-decl</term>
+                    </alt>
+                </grammar>
+                <section title="Variable declaration">
+                    <para>A variable declaration declares a variable which is a symbolic name
+                        associated with a value or a reference that can be used to store and
+                        manipulate data within a program. The value or reference held by the
+                        variable may be subject to change during the execution of the program, and
+                        the variable&apos;s name serves as an identifier to access and interact with
+                        the associated data. The scope of a variable is determined by its
+                        declaration context.</para>
+                    <para>If the variable declaration includes an <literal>else</literal> block,
+                        then conditional execution of the block is determined by whether the
+                        variable(s) are non-null. All variables declared with an explicit type
+                        annotation are matched according to the <ref id="pattern-matching">pattern
+                        matching</ref> rules. The <literal>block</literal> must use termination
+                        statement(s) (e.g. return, break, continue) to terminate the enclosing
+                        block.</para>
+                    <grammar term="variable-decl">
+                        <alt>
+                            <quoted>var</quoted>
+                            <term>variable</term>
+                            <opt-term>variable-sequence</opt-term>
+                            <opt-term>variable-else-block</opt-term>
+                        </alt>
+                    </grammar>
+                    <grammar term="variable-else-block">
+                        <alt>
+                            <quoted>else</quoted>
+                            <term>block</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="variable">
+                        <alt>
+                            <term>identifier</term>
+                            <opt-term>variable-type</opt-term>
+                            <opt-term>variable-assignment</opt-term>
+                        </alt>
+                    </grammar>
+                    <grammar term="variable-type">
+                        <alt>
+                            <quoted>:</quoted>
+                            <term>type</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="variable-assignment">
+                        <alt>
+                            <quoted>=</quoted>
+                            <term>expression</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="variable-sequence">
+                        <alt>
+                            <quoted>,</quoted>
+                            <term>variable</term>
+                        </alt>
+                        <alt>
+                            <quoted>,</quoted>
+                            <term>variable</term>
+                            <term>variable-sequence</term>
+                        </alt>
+                    </grammar>
+                    <para>Examples of variable declarations include:</para>
+                    <code>var n: Int?
+                        var s = &quot;Hello&quot;
+                        var b: Bool = true
+                        var x = 1,
+                        y: Int = 2,
+                        z: Int?
+</code>
+                </section>
+                <section title="Module declaration">
+                    <para>Gear programs are organized using modules. Modules are used both as an
+                        &quot;`internal`&quot; organization system for a program, and as an
+                        &quot;`external`&quot; organization system -- a way of presenting program
+                        elements that are exposed to other programs. Use directives are provided to
+                        facilitate the use of modules.</para>
+                    <para>Every module and type declaration has a fully qualified name, which
+                        uniquely identifies the module or type declaration amongst all others within
+                        the program.</para>
+                    <para>A module declaration consists of the keyword <literal>module</literal>
+                        followed by the module name. If the module has a body (see <grammarterm>
+                        module-body</grammarterm>), then only the enclosed declarations are added to
+                        the module. Otherwise, the module applies to all declarations in the
+                        compilation unit.</para>
+                    <grammar term="module-decl">
+                        <alt>
+                            <quoted>module</quoted>
+                            <term>module-name</term>
+                            <quoted>{</quoted>
+                            <term>module-body</term>
+                            <quoted>}</quoted>
+                        </alt>
+                        <alt>
+                            <quoted>module</quoted>
+                            <term>module-name</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="module-name">
+                        <alt>
+                            <quoted>identifier</quoted>
+                            <quoted>.</quoted>
+                            <term>module-name</term>
+                        </alt>
+                        <alt>
+                            <quoted>identifier</quoted>
+                        </alt>
+                    </grammar>
+                    <para>Only one module without a body can be declared in a compilation unit
+                        otherwise it is an error.</para>
+                    <para>The fully qualified module name (see <grammarterm>module-name</grammarterm>)
+                        is added to the global scope unless there is a module without a body in
+                        which case all modules with a body are added to the scope of the module
+                        without a body.</para>
+                    <para>Modules are open-ended, and two module declarations with the same fully
+                        qualified name contribute to the same declaration space.</para>
+                </section>
+                <section title="Function declaration">
+                    <para>A function type denotes the set of all functions with the same parameter
+                        and result types. Informally, they are a sequence of zero or more statements
+                        that accept input and produce an output.</para>
+                    <grammar term="func-decl">
+                        <alt>
+                            <quoted>func</quoted>
+                            <term>func-prefix</term>
+                            <term>block</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-prefix">
+                        <alt>
+                            <term>func-name</term>
+                            <term>func-signature</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-name">
+                        <alt>
+                            <term>identifier</term>
+                            <quoted>[</quoted>
+                            <term>type-params</term>
+                            <quoted>]</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-signature">
+                        <alt>
+                            <quoted>(</quoted>
+                            <opt-term>func-params</opt-term>
+                            <quoted>)</quoted>
+                            <opt-term>func-return</opt-term>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-params">
+                        <alt>
+                            <term>func-params</term>
+                            <quoted>,</quoted>
+                            <term>func-param</term>
+                        </alt>
+                        <alt>
+                            <term>func-param</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-param">
+                        <alt>
+                            <term>identifier</term>
+                            <term>type</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="func-return">
+                        <alt>
+                            <quoted>-&gt;</quoted>
+                            <term>type</term>
+                        </alt>
+                    </grammar>
+                    <para>Functions as discussed in this chapter are statements, however, they can
+                        also be expressions as discussed ref{here}.</para>
+                    <para>Free functions may be associated with a record type. The record to
+                        associate a function with is named by <grammarterm>ident-type</grammarterm>
+                        of the <grammarterm>func-prefix</grammarterm> production rule. If the
+                        association has an <grammarterm>identifier</grammarterm>, then it is
+                        receieves the record when invoked and is accessible by the label <grammarterm>
+                        identifier</grammarterm>.</para>
+                </section>
+                <section title="Class declaration">
+                    <para>A class is a composite data structure that contains fields and methods
+                        together known as members. Members may be specified explicitly or implicitly
+                        (see embedded members).</para>
+                    <para>Classes are declared with the <literal>class</literal> keyword, followed
+                        by a name, followed by a <grammarterm>class-body</grammarterm>. The <grammarterm>
+                        class-body</grammarterm> defines the fields and embedded members.</para>
+                    <code>// An empty class.
+                        class Foo {}
+
+                        // A class with two fields.
+                        class Person {
+                        name: String
+                        age: Int
+                        }
+</code>
+                    <grammar term="class-decl">
+                        <alt>
+                            <quoted>class</quoted>
+                            <term>class-header</term>
+                            <quoted>{</quoted>
+                            <term>class-body</term>
+                            <quoted>}</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="class-header">
+                        <alt>
+                            <term>identifier</term>
+                            <term>type-params</term>
+                        </alt>
+                        <alt>
+                            <term>identifier</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="class-body">
+                        <alt>
+                            <term>field-decl</term>
+                        </alt>
+                        <alt>
+                            <term>embedded-field</term>
+                        </alt>
+                        <alt>
+                            <term>method-decl</term>
+                        </alt>
+                        <alt>
+                            <term>static-method-decl</term>
+                        </alt>
+                        <alt>
+                            <term>mixin</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="field-body">
+                        <alt>
+                            <term>identifier-list</term>
+                            <quoted>:</quoted>
+                            <term>type</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="embedded-body">
+                        <alt>
+                            <term>identifier</term>
+                            <quoted>.{</quoted>
+                            <term>identifier-list</term>
+                            <quoted>}</quoted>
+                        </alt>
+                        <alt>
+                            <term>identifier</term>
+                            <quoted>.*</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="static-method-decl">
+                        <alt>
+                            <quoted>static</quoted>
+                            <term>func-decl</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="method-decl">
+                        <alt>
+                            <term>func-decl</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="mixin">
+                        <alt>
+                            <term>identifier</term>
+                        </alt>
+                    </grammar>
+                    <para>The record name defined by the <grammarterm>ident</grammarterm> in <grammarterm>
+                        record-header</grammarterm> is inserted into scope of the module in which is
+                        it was declared. It is also inserted into the scope of the record itself.
+                        This permits the record to be self-referenced as a field, see <grammarterm>
+                        type</grammarterm> of <grammarterm>fields-decl</grammarterm>.</para>
+                </section>
+                <section title="Interface declaration">
+                    <para>An interface is a named &lt;&lt;record-type,record type&gt;&gt;. They are
+                        declared with the <literal>interface</literal> keyword.</para>
+                    <grammar term="interface-decl">
+                        <alt>
+                            <quoted>interface</quoted>
+                            <term>interface-header</term>
+                            <quoted>{</quoted>
+                            <term>interface-body</term>
+                            <quoted>}</quoted>
+                        </alt>
+                    </grammar>
+                    <grammar term="interface-header">
+                        <alt>
+                            <term>identifier</term>
+                            <term>type-params</term>
+                        </alt>
+                        <alt>
+                            <term>identifier</term>
+                        </alt>
+                    </grammar>
+                    <grammar term="interface-body">
+                        <alt>
+                            <term>field-decl</term>
+                        </alt>
+                        <alt>
+                            <term>func-prefix</term>
+                        </alt>
+                        <alt>
+                            <term>static-method-decl</term>
+                        </alt>
+                        <alt>
+                            <term>mixin</term>
+                        </alt>
+                    </grammar>
+                    <para>Interfaces can be instantiated so long as there is an inline
+                        implementation provided for each method at the call site. See
+                        &lt;&lt;object-instantiation,object instantiation&gt;&gt;.</para>
+                    <para>Unlike a record type, an interface can mixin the contents of one or more
+                        interfaces.</para>
+                    <para>The primary difference between an interface and a struct is the former can
+                        be mixed and the latter can embed fields.</para>
+                </section>
+                <section title="Struct declaration">
+                    <para>A struct is a named &lt;&lt;record-type,record type&gt;&gt; declared on a
+                        the stack instead of the heap. Structs cannot mixin interfaces and they do
+                        not allow embedding. They are _nominally typed_.</para>
+                </section>
+            </chapter>
+            <chapter title="Patterns" id="pattern-matching">
+                <para>Explain pattern matching rules in if var, var/else, and switch statements.</para>
+            </chapter>
+            <chapter title="Classes">
+                <para>A class is a composite type.</para>
+                <section title="Embedded members">
+                    <para>Embedded members are part of the classes interface.</para>
+                    <para>A selector f may denote a field or method f of a type T, or it may refer
+                        to a field or method f of a nested embedded field of T. The number of
+                        embedded fields traversed to reach f is called its depth in T. The depth of
+                        a field or method f declared in T is zero. The depth of a field or method f
+                        declared in an embedded field A in T is the depth of f in A plus one.</para>
+                    <para>Promoted fields act like ordinary fields of a class except that they
+                        cannot be used as field names</para>
+                </section>
+                <section title="Methods">
+                    <para>Methods are functions semantically scoped to a class. Where <literal>left</literal>
+                        and <literal>right</literal> are self-referential fields.</para>
+                </section>
+            </chapter>
+            <chapter title="Structs">
+                <para>Copied by value...</para>
+            </chapter>
+            <chapter title="Interfaces">
+                <para>Discuss auto-boxing of structs and reference structural typing from the
+                    &quot;types&quot; chapter.</para>
+            </chapter>
+            <chapter title="Modules">
+                <para>Discuss the behavior of modules.</para>
+            </chapter>
+
+</chapters>
+
+<annexes>
+
+<annex title="Standard library" id="stdlib">
+<para>Content goes here!!!</para>
+</annex>
+
+<annex title="Implementation considerations">
+
+<para>
+The specification focuses on defining the expected behavior and observable outcomes of the Gear programming language.
+It specifies how Gear should operate from a functional and user-oriented perspective, but it does not prescribe the internal mechanisms or implementation details that achieve this behavior.
+While the specification defines the core behavior of the Gear language, real-world constraints and optimizations often necessitate additional considerations.
+This section offers practical guidance for implementers as well as strategies, algorithms, and optimizations to fulfill the described behavior.
+These considerations are intended to support implementers in adhering to the language’s principles while accommodating practical requirements.
+</para>
+
+<section title="Parsing source text">
+<para>
+Gear source text may be processed using a canonical LR(1) parser.
+This parser can either be written by hand or automatically generated using parser generation tools.
+Because conforming implementations must support the Unicode character repertoire, any parser generation tool must itself be Unicode conformant.
+Parser generation tools that only support ASCII may not be used.
+</para>
+</section>
+
+<section title="Numeric representation">
+<para>
+The specification defines two numeric types: Int and Real.
+The specification designates their underlying representation as implementation-defined to provide the greatest degree of flexibility.
+There are several approaches available for digitally approximating real number values.
+Examples include the IEEE 754 floating-point standard, type III unums (posits), and fixed-point.
+Examples for representing integer values include signed magnitude representation, one’s complement, and two’s complement.
+The aforementioned formats are supported by modern hardware and therefore represent the most practical and efficient approach to representing numeric values.
+</para>
+
+<para>
+To simulate a wider range of numeric values beyond what is traditionally supported by hardware requires a software solution.
+Implementations may spport arbitrary-precision arithmetic.
+This approach is limited only by the available memory rather than by fixed-size data types supported by the hardware.
+This approach provides the greatest degree of flexability, but at a performance cost.
+</para>
+</section>
+
+<section title="String representation">
+<para>
+The Unicode Standard defines several approaches to encoding text: UTF-8, UTF-16, and UTF-32.
+UTF-32 encodes each character as a fixed-length 32-bit integer.
+This fixed length simplifies character indexing and manipulation but consumes more memory relative to UTF-8 and UTF-16.
+UTF-16 uses one or two 16-bit integers to encode each character.
+It is more space efficent than UTF-32, but characters cannot be indexed in constant time.
+UTF-8 uses one to four bytes to encode each charater.
+Is is more space efficent for Latin text relative to UTF-16, but decoding characters is more computation expensive and characters cannot be indexed in constant time.
+</para>
+
+<para>
+String must provide operations for indexing characters therefore careful considerations must be made when implementation strings.
+The simpliest approach is to choose one of the aformentioned encodings.
+Alternatively, implementations may represent each character as 8-bits, 16-bits, or 32-bits depending on the characters involved.
+This approach saves memory for Latin characters and characters in the Basic Multilingual Plane.
+</para>
+
+<para>
+The <literal>String</literal> type is a value type.
+This specification states that value types are copied, however, copying strings - especially longer strings - would introduce an unneccessary performance overhead and increase memory pressure.
+Because this specification defines strings to be immutable, implementations may internally treat them as references types.
+An implementation may also deduplicate strings in memory with string interning.
+</para>
+</section>
+
+<section title="Conditional compilation blocks">
+<para>
+Compiler control statements, comments, and strings must be processed together.
+Conceptually, this processing — along with the removal of conditionally excluded source text — occurs prior to any other analysis.
+This approach results in a two-pass tokenization process: the first pass handles compiler control statements, comments, and strings, generating new source text with the excluded text removed.
+The second pass performs lexical analysis on this cleaned source text.
+</para>
+
+<para>
+To streamline the process and avoid generating new source text, tokens can be processed into a list during the first pass.
+Tokenization diagnostics can be appended directly to the relevant tokens.
+Unrecognized tokens may be represented as special, implementation-specific “invalid” tokens in the list.
+</para>
+
+<para>
+After constructing the complete token list, it can be iterated to remove tokens excluded by conditional control statements evaluating to false.
+The final list, including all tokens and associated diagnostics, can be analyized.
+</para>
+</section>
+
+</annex>
+</annexes>
+</document>
