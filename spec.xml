@@ -1361,68 +1361,79 @@ https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-spec
 </section>
 </chapter>
 
-            <chapter title="Identifiers and scope" id="scope">
-                <para><italic>Identifiers</italic> are names used to identify variables, functions,
-                    types, and other named entities within the language. An identifier serves as a
-                    symbolic name that binds to a specific entity in the language, allowing
-                    programmers to reference and manipulate that entity throughout the code. An
-                    identifier is entered in source code using the <grammarterm>identifier</grammarterm>
-                    lexical token.</para>
-                <para><index>Name binding</index> refers to the association of an identifier with an
-                    entity, such as data or code. Name binding establishes a relationship where the
-                    identifier acts as a reference to the underlying entity.</para>
-                <para>“Scope” refers to the set of all name bindings that are valid within a part of
-                    a program or at a given point in a program. Scope is determined by the lexical
-                    structure of the code. Lexical scoping is the mechanism used to determine the
-                    visibility and lifetime of identifiers based on the program&apos;s textual
-                    structure. Under lexical scoping, the scope of an identifier is determined by
-                    its position in the source code and the nesting of code blocks, rather than the
-                    execution flow.</para>
-                <para>A <index>declaration</index> creates a name binding to a constant, type, type
-                    parameter, variable, function, or module. Every identifier in a program must be
-                    declared. No identifier may be declared twice in the same scope.</para>
-                <section title="Block scope" id="block">
-                    <para>A <index>block</index> is a possibly empty sequence of declarations and
-                        statements within matching brace brackets. Each block defines a new scope.</para>
-                    <para>When a block is declared in another block the former is referred to as the <italic>inner
-                        block</italic> and the latter is the <italic>outer block</italic>. An
-                        identifier declared in an outer block is visible to all inner (nested)
-                        blocks if its declaration precedes the inner block declaration in the
-                        textual order of the code.</para>
-                    <grammar term="Block">
-                        <alt>
-                            <quoted>{</quoted>
-                            <term>StatementList</term>
-                            <quoted>}</quoted>
-                        </alt>
-                    </grammar>
-                    <grammar term="StatementList">
-                        <alt>
-                            <term>Statement</term>
-                            <quoted>;</quoted>
-                        </alt>
-                        <alt>
-                            <term>Statement</term>
-                            <quoted>;</quoted>
-                            <term>StatementList</term>
-                        </alt>
-                    </grammar>
-                </section>
-                <section title="Module scope">
-                    <para>TODO: Explain what it is...</para>
-                    <para>Declarations outside any block occur at module scope.</para>
-                </section>
-                <section title="Identifier resolution">
-                    <para>TODO: Put algorithm here for identifier resolution accounting for the
-                        current block scope and then module scopes.</para>
-                    <para>TODO: Mention shadowing? Maybe not. It can be implied from the spec.</para>
-                    <latexbigmath>IdRes(id,scope) = \begin{cases}
-                        id &amp; \text{if } id \in scope, \\
-                        IdRes(id,ParentScope(scope)) &amp; \text{if } id \notin scope.
-                        \end{cases}
+<chapter title="Identifiers and scope" id="scope">
+<para>
+<italic>Identifiers</italic> are names used to identify variables, functions, types, and other named entities within the language.
+An identifier serves as a symbolic name that binds to a specific entity in the language, allowing programmers to reference and manipulate that entity throughout the code.
+An identifier is entered in source code using the <grammarterm>identifier</grammarterm> lexical token.
+</para>
+
+<para>
+<index>Name binding</index> refers to the association of an identifier with an entity, such as data or code.
+Name binding establishes a relationship where the identifier acts as a reference to the underlying entity.
+</para>
+
+<para>
+“Scope” refers to the set of all name bindings that are valid within a part of a program or at a given point in a program.
+Scope is determined by the lexical structure of the code.
+Lexical scoping is the mechanism used to determine the visibility and lifetime of identifiers based on the program&apos;s textual structure.
+Under lexical scoping, the scope of an identifier is determined by its position in the source code and the nesting of code blocks, rather than the execution flow.
+</para>
+
+<para>
+A <index>declaration</index> creates a name binding to a constant, type, type parameter, variable, function, or module.
+Every identifier in a program must be declared.
+No identifier may be declared twice in the same scope.
+</para>
+
+<section title="Block scope" id="block">
+<para>
+A <index>block</index> is a possibly empty sequence of declarations and statements within matching brace brackets. Each block defines a new scope.
+</para>
+
+<para>
+When a block is declared in another block the former is referred to as the <italic>inner block</italic> and the latter is the <italic>outer block</italic>.
+An identifier declared in an outer block is visible to all inner (nested) blocks if its declaration precedes the inner block declaration in the textual order of the code.
+</para>
+
+<grammar term="Block">
+    <alt><quoted>{</quoted> <term>StatementList</term> <quoted>}</quoted></alt>
+</grammar>
+
+<grammar term="StatementList">
+    <alt><term>Statement</term> <quoted>;</quoted></alt>
+    <alt><term>Statement</term> <quoted>;</quoted> <term>StatementList</term></alt>
+</grammar>
+</section>
+
+<section title="Module scope">
+<para>
+TODO: Explain what it is...
+</para>
+
+<para>
+Declarations outside any block occur at module scope.
+</para>
+</section>
+
+<section title="Identifier resolution">
+<para>
+TODO: Put algorithm here for identifier resolution accounting for the current block scope and then module scopes.
+</para>
+
+<para>
+TODO: Mention shadowing? Maybe not. It can be implied from the spec.
+</para>
+
+<latexbigmath>IdRes(id,scope) = \begin{cases}
+id &amp; \text{if } id \in scope, \\
+IdRes(id,ParentScope(scope)) &amp; \text{if } id \notin scope.
+\end{cases}
 </latexbigmath>
-                </section>
-            </chapter>
+
+</section>
+</chapter>
+
             <chapter title="Expressions">
                 <para>An expression specifies the computation of a value by applying operators and
                     functions to operands.</para>
