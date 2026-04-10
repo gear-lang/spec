@@ -1,0 +1,60 @@
+<chapter title="Conformance">
+<index term="conformance requirements">
+
+<para>
+Conformance is of interest to the following audiences:
+</para>
+
+<ul>
+    <li>Those designing, implementing, or maintaining Gear implementations.</li>
+    <li>Governmental or commercial entities wishing to procure Gear implementations.</li>
+    <li>Testing organizations wishing to provide a Gear conformance test suite.</li>
+    <li>Programmers wishing to port code from one Gear implementation to another.</li>
+    <li>Educators wishing to teach Gear.</li>
+    <li>Authors wanting to write about Gear.</li>
+</ul>
+
+<para>
+As such, conformance is most important, and the bulk of this specification is aimed at specifying the characteristics that make Gear implementations and Gear programs conforming ones.
+</para>
+
+<para>
+The text in this specification that specifies requirements is considered <italic>normative</italic>.
+All other text in this specification is <italic> informative</italic>; that is, for information purposes only.
+Unless stated otherwise, all text is normative.
+Normative text is further broken into <italic>required and conditional</italic> categories.
+<italic>Conditionally</italic> normative text specifies a feature and its requirements where the feature is optional.
+However, if that feature is provided, its syntax and semantics shall be exactly as specified.
+</para>
+
+<para>
+A <italic>strictly conforming program</italic> shall use only those features of the language specified in this specification as being required.
+(This means that a strictly conforming program cannot use any conditionally normative feature).
+It shall not produce output dependent on any unspecified, undefined, or implementation-defined behavior.
+“Must” describes essential behavior that needs to be uniformly applied across all implementations.
+“Should” describes a strong recommendation, but is not required.
+</para>
+
+<para>
+A <italic>conforming implementation</italic> of Gear shall accept any strictly conforming program.
+</para>
+
+<para>
+A conforming implementation of Gear shall provide and support all the types, values, functions, and program syntax and semantics described in the normative (but not the conditionally normative) parts in this specification.
+</para>
+
+<para>
+A conforming implementation of Gear is permitted to provide additional types, values, and functions beyond those described in this specification, provided they do not alter the behavior of any strictly conforming program.
+</para>
+
+<para>
+A conforming implementation of Gear shall support the standard library documented in <partref id="stdlib" />.
+This library is included by reference in this specification.
+</para>
+
+<para>
+A conforming program is one that is acceptable to a conforming implementation.
+</para>
+
+</index>
+</chapter>

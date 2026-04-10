@@ -1,0 +1,82 @@
+<annex title="Implementation considerations">
+<para>
+The specification focuses on defining the expected behavior and observable outcomes of the Gear programming language.
+It specifies how Gear should operate from a functional and user-oriented perspective, but it does not prescribe the internal mechanisms or implementation details that achieve this behavior.
+While the specification defines the core behavior of the Gear language, real-world constraints and optimizations often necessitate additional considerations.
+This section offers practical guidance for implementers as well as strategies, algorithms, and optimizations to fulfill the described behavior.
+These considerations are intended to support implementers in adhering to the language’s principles while accommodating practical requirements.
+</para>
+
+<section title="Parsing source text">
+<para>
+Gear source text may be processed using a canonical LR(1) parser.
+This parser can either be written by hand or automatically generated using parser generation tools.
+Because conforming implementations must support the Unicode character repertoire, any parser generation tool must itself be Unicode conformant.
+Parser generation tools that only support ASCII may not be used.
+</para>
+</section>
+
+<section title="Numeric representation">
+<para>
+The specification defines two numeric types: Int and Real.
+The specification designates their underlying representation as implementation-defined to provide the greatest degree of flexibility.
+There are several approaches available for digitally approximating real number values.
+Examples include the IEEE 754 floating-point standard, type III unums (posits), and fixed-point.
+Examples for representing integer values include signed magnitude representation, one’s complement, and two’s complement.
+The aforementioned formats are supported by modern hardware and therefore represent the most practical and efficient approach to representing numeric values.
+</para>
+
+<para>
+To simulate a wider range of numeric values beyond what is traditionally supported by hardware requires a software solution.
+Implementations may spport arbitrary-precision arithmetic.
+This approach is limited only by the available memory rather than by fixed-size data types supported by the hardware.
+This approach provides the greatest degree of flexability, but at a performance cost.
+</para>
+</section>
+
+<section title="String representation">
+<para>
+The Unicode Standard defines several approaches to encoding text: UTF-8, UTF-16, and UTF-32.
+UTF-32 encodes each character as a fixed-length 32-bit integer.
+This fixed length simplifies character indexing and manipulation but consumes more memory relative to UTF-8 and UTF-16.
+UTF-16 uses one or two 16-bit integers to encode each character.
+It is more space efficent than UTF-32, but characters cannot be indexed in constant time.
+UTF-8 uses one to four bytes to encode each charater.
+Is is more space efficent for Latin text relative to UTF-16, but decoding characters is more computation expensive and characters cannot be indexed in constant time.
+</para>
+
+<para>
+String must provide operations for indexing characters therefore careful considerations must be made when implementation strings.
+The simpliest approach is to choose one of the aformentioned encodings.
+Alternatively, implementations may represent each character as 8-bits, 16-bits, or 32-bits depending on the characters involved.
+This approach saves memory for Latin characters and characters in the Basic Multilingual Plane.
+</para>
+
+<para>
+The <literal>String</literal> type is a value type.
+This specification states that value types are copied, however, copying strings - especially longer strings - would introduce an unneccessary performance overhead and increase memory pressure.
+Because this specification defines strings to be immutable, implementations may internally treat them as references types.
+An implementation may also deduplicate strings in memory with string interning.
+</para>
+</section>
+
+<section title="Conditional compilation blocks">
+<para>
+Compiler control statements, comments, and strings must be processed together.
+Conceptually, this processing — along with the removal of conditionally excluded source text — occurs prior to any other analysis.
+This approach results in a two-pass tokenization process: the first pass handles compiler control statements, comments, and strings, generating new source text with the excluded text removed.
+The second pass performs lexical analysis on this cleaned source text.
+</para>
+
+<para>
+To streamline the process and avoid generating new source text, tokens can be processed into a list during the first pass.
+Tokenization diagnostics can be appended directly to the relevant tokens.
+Unrecognized tokens may be represented as special, implementation-specific “invalid” tokens in the list.
+</para>
+
+<para>
+After constructing the complete token list, it can be iterated to remove tokens excluded by conditional control statements evaluating to false.
+The final list, including all tokens and associated diagnostics, can be analyized.
+</para>
+</section>
+</annex>

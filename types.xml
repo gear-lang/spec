@@ -1,0 +1,312 @@
+<chapter title="Types">
+<para>
+A <index>type</index> determines a set of values together with operations and methods specific to those values.
+The types of the Gear language are divided into two main categories: reference types and value types.
+A reference type may be a <italic>generic type</italic>, which take one or more <italic>type parameters</italic>.
+</para>
+
+<para>
+Value types differ from reference types in that variables of the value types directly contain their data, whereas variables of the reference types store <italic>
+references</italic> to their data. With reference types, it is possible for two variables to reference the same object, and thus possible for operations on one
+variable to affect the object referenced by the other variable.
+With value types, the variables each have their own copy of the data, and it is not possible for operations on one to affect the other. Value types may also have
+operators associated with them whereas reference types may not.
+</para>
+
+<grammar term="type" id="type">
+    <alt><term>named-type</term></alt>
+    <alt><term>function-type</term></alt>
+    <alt><term>record-type</term></alt>
+    <alt><term>optional-type</term></alt>
+</grammar>
+
+<para>
+A type may be denoted by a <italic>type name</italic>, if it has one, which must be followed by type arguments if the type is generic.
+A type may also be specified using a <italic>type literal</italic>, which composes a type from existing types.
+</para>
+
+<para>
+A type error occurs when a program construct cannot be assigned a type.
+</para>
+
+<section title="Named types">
+<para>
+Named types are types declared with an <grammarterm>identifier</grammarterm>.
+The name of a type includes the modules it is declared in.
+</para>
+
+<example>
+The declaration <literal>class Person { name: String </literal>} would define a record type named Person, but the type in the variable declaration <literal>var
+person: { name: String </literal>} is not named.
+</example>
+
+<para>
+Value types are always named.
+</para>
+</section>
+
+<section title="Intrinsic types">
+<para>
+Intrinsic types are fundamental types directly supported by Gear and any underlying implementation.
+These types are always accessible and have operations that are also predefined.
+</para>
+
+<section title="Boolean types">
+<para>
+A <index>boolean type</index> represents the set of Boolean truth values denoted by the keywords <literal>true</literal> and <literal> false</literal>.
+The boolean type is <literal>Bool</literal>.
+</para>
+
+<para>
+Boolean types are value types.
+</para>
+</section>
+
+<section title="Integer types">
+<para>
+An <index>integer type</index> represents a continuous range of whole numbers without any fractional part.
+The minimum storage requirements for the integer type are <latexmath>2^{32}</latexmath> bits.
+The representable range of the integer type, and its underlying format, are implementation-defined.
+</para>
+
+<para>
+The integer type is named <literal>Int</literal>.
+Integers appear literally represented in source code according to the <grammarterm> integer-literal</grammarterm> grammar rule.
+Implementations must report an error or warning for integer literals outside the representable range.
+Implementations reporting a warning should clamp the integer to its minima or maxima.
+</para>
+
+<para>
+Integer types are value types.
+</para>
+</section>
+
+<section title="Real types">
+<para>
+A <index>real type</index> represents a finite approximation of whole and fractional numbers.
+The representable range and fractional precision of a real type, and its underlying format, are implementation-defined.
+</para>
+
+<para>
+The real type is named <literal>Real</literal>.
+Reals may be literally represented in source code according to the <grammarterm>real-literal</grammarterm> grammar rule.
+Implementations must report an error or warning for real literals outside the representable range.
+Implementations reporting a warning should clamp the real to its minima or maxima.
+</para>
+
+<para>
+Real types are value types.
+</para>
+</section>
+
+<section title="Character types">
+<para>
+A <index>character type</index> represents the set of Unicode scalar values.
+The character type is <literal>Char</literal>.
+</para>
+
+<para>
+Characters appear literally represented in source code according to the <grammarterm>real-literal</grammarterm> grammar rule.
+Implementations must report an error if a character literal describes a code point that is not a Unicode scalar value.
+</para>
+
+<para>
+Character types are value types.
+</para>
+</section>
+
+<section title="String types">
+
+<para>
+A <index>string type</index> represents an immutable collection of zero or more characters.
+The underlying representation is implementation-defined.
+</para>
+
+<para>
+The string type is <literal>String</literal>.
+Strings appear literally represented in source code according to the <grammarterm>string-literal</grammarterm> grammar rule.
+</para>
+
+<para>
+String types are value types.
+</para>
+
+</section>
+</section>
+
+<section title="Function types">
+<para>
+A <index>function type</index> denotes the set of all functions with the same parameter and result types.
+</para>
+
+<grammar term="function-type" id="function-type">
+    <alt><quoted>(</quoted> <opt-term>function-parameters</opt-term> <opt-term>function-return-type</opt-term> <quoted>)</quoted></alt>
+</grammar>
+<grammar term="function-parameters" id="function-parameters">
+    <alt><term>parameter</term> <quoted>,</quoted> <term>function-parameters</term></alt>
+    <alt><term>parameter</term></alt>
+</grammar>
+<grammar term="parameter" id="parameter">
+    <alt><term>identifier</term> <quoted>:</quoted> <term>type</term></alt>
+    <alt><term>identifier</term></alt>
+</grammar>
+<grammar term="function-return-type" id="function-return-type">
+    <alt><quoted>-&gt;</quoted> <term>type</term></alt>
+</grammar>
+
+<para>
+It is erroneous for the last <grammarterm>parameter</grammarterm> in <grammarterm> function-parameters</grammarterm> to omit a <grammarterm>type</grammarterm>.
+The function type <literal>(a,b:Int)</literal> is valid, but <literal>(a:Int,b)</literal> is erroneous.
+</para>
+</section>
+
+<section title="Object types">
+<para>
+An object is a sequence of named elements, called fields, each of which has a name and a type.
+An object can have functions associated with it called <index>methods</index>.
+</para>
+</section>
+
+<section title="Optional types">
+<para>
+An <grammarterm>optional type</grammarterm> is a type constructor that encapsulates the possibility of a value being present or absent.
+It can contain a value of type <italic>T</italic> or represent the absence of a value by the special value <literal>nil</literal>.
+</para>
+
+<para>
+Optional types are denoted by appending a question mark (?) to an existing type.
+This syntax indicates that the type can either be a value of the specified type or represent the absence of a value.
+</para>
+
+<grammar term="optional-type">
+    <alt><term>type</term> <quoted>?</quoted></alt>
+</grammar>
+
+<example>
+The type <literal>Int?</literal> represents a type that is either an integer or nil.
+The type <literal>Bool??</literal> represents an optional type that might contain another optional type which might contain a boolean.
+</example>
+</section>
+
+<section title="Parameterized Types">
+<para>
+Parameterized types, or <italic>generic types</italic>, take type parameters and create new types based on those parameters.
+Type constructors allow for parametric polymorphism, where the new type is generic and can be instantiated with different type arguments.
+</para>
+
+<para>
+Type constructors can take type parameters and create new types based on those parameters. 
+</para>
+
+<para>
+Type parameters must be one of the following: named interface type, inline record type, inline function type, intersection type, or an alias type to
+any of the aformentioned types. When instantiating a generic type the type arguments can be any type except an optional type.
+</para>
+</section>
+
+<section title="Type compatibility">
+<para>
+Type compatibility refers to the rules or conditions under which a type <italic>T</italic> can be substituted for another type <italic>S</italic> without resulting in a compile-time error.
+There are two aspects to type compatibility: subtyping and type equivalence.
+Subtyping refers to a relationship where one type (the subtype) is considered to be a specialization of another type (the supertype).
+Type equivalence refers to whether two types are considered the same for the purposes of type checking.
+</para>
+
+<para>
+If type <italic>S</italic> is a subtype of type <italic>T</italic> (written as <italic>S&lt;:T</italic>), then values of type <italic>T</italic> may be replaced with values of type <italic>S</italic>.
+If type <italic>S</italic> is type equivalent to type <italic>T</italic> (written as <italic>S≡T</italic>), then values of type <italic>T</italic> may be replaced with values of type <italic>S</italic>.
+</para>
+
+<para>
+Type <italic>S</italic> may be type equivalent to type <italic>T</italic> by structural equivalence or nominal equivalence.
+When types are compared for structural equivalence it means equivalence is determined by the type&apos;s actual structure or definition and not by other characteristics such as its name.
+When types are compared for nominal equivalence it means equivalence is determined by the name of the types.
+</para>
+
+<para>
+Unless otherwise noted in this specification a type <italic>S</italic> and a type <italic>T</italic> are never type compatible.
+</para>
+
+<section title="Value types">
+<para>
+A value type <italic>T</italic> can be substituted for a value type <italic>S</italic> if all of the conditions apply:
+</para>
+
+<ul>
+    <li><italic>S</italic> and <italic>T</italic> are named types</li>
+    <li><italic>S</italic> and <italic>T</italic> name the same type</li>
+</ul>
+</section>
+
+<section title="Function types">
+<para>
+A function type may be defined with parameter types <latexmath>\{p_1,p_2,\ldots,p_n\}</latexmath> and return type <latexmath>R</latexmath>.
+Let <latexmath>P=\{p_1,p_2,\ldots,p_n\}</latexmath>.
+Given a function type <italic>F</italic> denote its parameter types with <latexmath>F_P</latexmath> and its return type with <latexmath>F_R</latexmath>.
+</para>
+
+<para>
+A function type <italic>T</italic> can be substituted for another function type <italic>S</italic> if all of the conditions apply:
+</para>
+
+<ul>
+    <li><italic>S</italic> and <italic>T</italic> have the same arity</li>
+    <li><italic>T<sub>P</sub></italic> &lt;: <italic>S<sub>P</sub></italic></li>
+    <li><italic>S<sub>R</sub></italic> &lt;: <italic>T<sub>R</sub></italic></li>
+</ul>
+</section>
+
+<section title="Object types">
+<para>
+When an object type is a value type it must conform to the type compatibility rules for value types.
+The remainder of this seciton defines type compatibility for when an object type is a reference type.
+</para>
+
+<para>
+An object type may be defined with members <latexmath>\{m_1,m_2,\ldots,m_n\}</latexmath>.
+Let <latexmath>M=\{m_1,m_2,\ldots,m_n\}</latexmath>.
+Given a object type <italic>R</italic> denote its members types with <latexmath>R_M</latexmath>.
+</para>
+
+<para>
+Formally, an object type <italic>T</italic> can be substituted for another object type <italic>S</italic> if all of the conditions apply:
+</para>
+
+<ul>
+    <li><italic>S<sub>M</sub></italic> ⊆ <italic>T<sub>M</sub></italic></li>
+    <li><italic>S<sub>M</sub></italic> ≡ <italic>T<sub>M</sub></italic></li>
+</ul>
+</section>
+
+<section title="Parameterized Types">
+<para>
+TODO: Generic parameters must be structurally (or even nominally) equivalent.
+You can&apos;t do the String[] to Object[] thing like in C# because it is type unsafe (see wiki page on variance).
+</para>
+</section>
+</section>
+
+<section title="Boxing and unboxing">
+<para>
+Boxing refers to copying a value of a value type into a new value that is a reference type.
+</para>
+
+<section title="Boxing conventions">
+<para>
+A boxing conversion permits a value type to be implicitly converted to a reference type.
+The following boxing conversions exist: From any value type to a variance-convertible reference type:
+https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/conversions#1029-boxing-conversions
+</para>
+</section>
+
+<section title="Unboxing conventions">
+<para>
+An unboxing conversion permits a reference type to be implicitly converted to a value type.
+The following unboxing conversions exist: From any generic value type `V₀` to a value type `V`.
+An unboxing conversion permits a reference type to be explicitly converted to a value type.
+https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/conversions#1037-unboxing-conversions
+</para>
+</section>
+
+</section>
+</chapter>

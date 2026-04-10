@@ -1,0 +1,33 @@
+<chapter title="Basic concepts">
+
+<para>
+Program execution begins when the execution environment calls a function, which is referred to as the program&apos;s <ref id="entry-point">entry point</ref>.
+</para>
+
+<para>
+During program execution instructions or statements are sequentially executed in the order they are written in the source code.
+This means that the first statement is executed first, followed by the second, and so on, until the end of the sequence is reached.
+At any given point, only one instruction or statement can be executed.
+There is no overlap or simultaneous execution of multiple instructions.
+</para>
+
+<para>
+Sequential execution can be altered using <index>control flow</index> constructs such as conditionals (<literal>if</literal>, <literal>switch</literal>),
+loops (<literal>for</literal>, <literal>while</literal>), and function calls, which can change the order in which statements are executed.
+</para>
+
+<para>
+Program termination occurs after the last instruction or statement of the <italic>entry point</italic> has executed or the code panics without handling the panic.
+When program termination occurs control is returned to the execution environment.
+</para>
+
+<section title="Run-time panics">
+
+<para>
+Execution errors such as attempting to divide by zero trigger a <italic>run-time panic</italic> equivalent to a call of the built-in function <literal>panic</literal>
+with a value of the implementation-defined interface type <literal>std.Error</literal>.
+The exact error values that represent distinct run-time error conditions are unspecified.
+</para>
+
+</section>
+</chapter>

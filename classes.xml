@@ -1,0 +1,29 @@
+<chapter title="Classes">
+<para>
+A class is a composite type.
+</para>
+
+<section title="Embedded members">
+<para>
+Embedded members are part of the classes interface.
+</para>
+
+<para>
+A selector f may denote a field or method f of a type T, or it may refer to a field or method f of a nested embedded field of T.
+The number of embedded fields traversed to reach f is called its depth in T.
+The depth of a field or method f declared in T is zero.
+The depth of a field or method f declared in an embedded field A in T is the depth of f in A plus one.
+</para>
+
+<para>
+Promoted fields act like ordinary fields of a class except that they cannot be used as field names
+</para>
+</section>
+
+<section title="Methods">
+<para>
+Methods are functions semantically scoped to a class.
+Where <literal>left</literal> and <literal>right</literal> are self-referential fields.
+</para>
+</section>
+</chapter>

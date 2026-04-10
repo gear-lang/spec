@@ -1,0 +1,257 @@
+<chapter title="Declarations">
+<para>
+A declaration binds an identifier to a constant, type, type parameter, variable, function, or module. Every identifier in a program must be declared.
+No identifier may be declared twice in the same block.
+</para>
+
+<grammar term="declarations">
+    <alt><term>class-decl</term></alt>
+    <alt><term>struct-decl</term></alt>
+    <alt><term>interface-decl</term></alt>
+    <alt><term>function-decl</term></alt>
+    <alt><term>typealias-decl</term></alt>
+    <alt><term>module-decl</term></alt>
+    <alt><term>variable-decl</term></alt>
+</grammar>
+
+<section title="Variable declaration">
+<para>
+A variable declaration declares a variable which is a symbolic name associated with a value or a reference that can be used to store and manipulate data within a program.
+The value or reference held by the variable may be subject to change during the execution of the program, and the variable&apos;s name serves as an identifier to access and interact with the associated data.
+The scope of a variable is determined by its declaration context.
+</para>
+
+<para>
+If the variable declaration includes an <literal>else</literal> block, then conditional execution of the block is determined by whether the variable(s) are non-null.
+All variables declared with an explicit type annotation are matched according to the <ref id="pattern-matching">pattern matching</ref> rules.
+The <literal>block</literal> must use termination statement(s) (e.g. return, break, continue) to terminate the enclosing block.
+</para>
+
+<grammar term="variable-decl">
+    <alt><quoted>var</quoted> <term>variable</term> <opt-term>variable-sequence</opt-term> <opt-term>variable-else-block</opt-term></alt>
+</grammar>
+<grammar term="variable-else-block">
+    <alt><quoted>else</quoted> <term>block</term></alt>
+</grammar>
+<grammar term="variable">
+    <alt><term>identifier</term> <opt-term>variable-type</opt-term> <opt-term>variable-assignment</opt-term></alt>
+</grammar>
+<grammar term="variable-type">
+    <alt><quoted>:</quoted> <term>type</term></alt>
+</grammar>
+<grammar term="variable-assignment">
+    <alt><quoted>=</quoted> <term>expression</term></alt>
+</grammar>
+<grammar term="variable-sequence">
+    <alt><quoted>,</quoted> <term>variable</term></alt>
+    <alt><quoted>,</quoted> <term>variable</term> <term>variable-sequence</term></alt>
+</grammar>
+
+<para>
+Examples of variable declarations include:
+</para>
+
+<code>var n: Int?
+var s = &quot;Hello&quot;
+var b: Bool = true
+var x = 1,
+y: Int = 2,
+z: Int?
+</code>
+</section>
+
+<section title="Module declaration">
+<para>
+Gear programs are organized using modules.
+Modules are used both as an &quot;`internal`&quot; organization system for a program, and as an &quot;`external`&quot; organization system -- a way of presenting program elements that are exposed to other programs.
+Use directives are provided to facilitate the use of modules.
+</para>
+
+<para>
+Every module and type declaration has a fully qualified name, which uniquely identifies the module or type declaration amongst all others within the program.
+</para>
+
+<para>
+A module declaration consists of the keyword <literal>module</literal> followed by the module name.
+If the module has a body (see <grammarterm> module-body</grammarterm>), then only the enclosed declarations are added to the module.
+Otherwise, the module applies to all declarations in the compilation unit.
+</para>
+
+<grammar term="module-decl">
+    <alt><quoted>module</quoted> <term>module-name</term> <quoted>{</quoted> <term>module-body</term> <quoted>}</quoted></alt>
+    <alt><quoted>module</quoted> <term>module-name</term></alt>
+</grammar>
+
+<grammar term="module-name">
+    <alt><quoted>identifier</quoted> <quoted>.</quoted> <term>module-name</term></alt>
+    <alt><quoted>identifier</quoted></alt>
+</grammar>
+
+<para>
+Only one module without a body can be declared in a compilation unit otherwise it is an error.
+</para>
+
+<para>
+The fully qualified module name (see <grammarterm>module-name</grammarterm>) is added to the global scope unless there is a module
+without a body in which case all modules with a body are added to the scope of the module without a body.
+</para>
+
+<para>
+Modules are open-ended, and two module declarations with the same fully qualified name contribute to the same declaration space.
+</para>
+</section>
+
+<section title="Function declaration">
+<para>
+A function type denotes the set of all functions with the same parameter and result types.
+Informally, they are a sequence of zero or more statements that accept input and produce an output.
+</para>
+
+<grammar term="func-decl">
+    <alt><quoted>func</quoted> <term>func-prefix</term> <term>block</term></alt>
+</grammar>
+
+<grammar term="func-prefix">
+    <alt><term>func-name</term> <term>func-signature</term></alt>
+</grammar>
+
+<grammar term="func-name">
+    <alt><term>identifier</term> <quoted>[</quoted> <term>type-params</term> <quoted>]</quoted></alt>
+</grammar>
+
+<grammar term="func-signature">
+    <alt><quoted>(</quoted> <opt-term>func-params</opt-term> <quoted>)</quoted> <opt-term>func-return</opt-term></alt>
+</grammar>
+
+<grammar term="func-params">
+    <alt><term>func-params</term> <quoted>,</quoted> <term>func-param</term></alt>
+    <alt><term>func-param</term></alt>
+</grammar>
+
+<grammar term="func-param">
+    <alt><term>identifier</term> <term>type</term></alt>
+</grammar>
+
+<grammar term="func-return">
+    <alt><quoted>-&gt;</quoted> <term>type</term></alt>
+</grammar>
+
+<para>
+Functions as discussed in this chapter are statements, however, they can also be expressions as discussed ref{here}.
+</para>
+
+<para>
+Free functions may be associated with a record type.
+The record to associate a function with is named by <grammarterm>ident-type</grammarterm> of the <grammarterm>func-prefix</grammarterm> production rule.
+If the association has an <grammarterm>identifier</grammarterm>, then it is receieves the record when invoked and is accessible by the label <grammarterm>identifier</grammarterm>.
+</para>
+</section>
+
+<section title="Class declaration">
+<para>
+A class is a composite data structure that contains fields and methods together known as members.
+Members may be specified explicitly or implicitly (see embedded members).
+</para>
+
+<para>
+Classes are declared with the <literal>class</literal> keyword, followed by a name, followed by a <grammarterm>class-body</grammarterm>.
+The <grammarterm>class-body</grammarterm> defines the fields and embedded members.</para>
+
+<code>// An empty class.
+class Foo {}
+
+// A class with two fields.
+class Person {
+name: String
+age: Int
+}
+</code>
+
+<grammar term="class-decl">
+    <alt><quoted>class</quoted> <term>class-header</term> <quoted>{</quoted> <term>class-body</term> <quoted>}</quoted></alt>
+</grammar>
+
+<grammar term="class-header">
+    <alt><term>identifier</term> <term>type-params</term></alt>
+    <alt><term>identifier</term></alt>
+</grammar>
+
+<grammar term="class-body">
+    <alt><term>field-decl</term></alt>
+    <alt><term>embedded-field</term></alt>
+    <alt><term>method-decl</term></alt>
+    <alt><term>static-method-decl</term></alt>
+    <alt><term>mixin</term></alt>
+</grammar>
+
+<grammar term="field-body">
+    <alt><term>identifier-list</term> <quoted>:</quoted> <term>type</term></alt>
+</grammar>
+
+<grammar term="embedded-body">
+    <alt><term>identifier</term> <quoted>.{</quoted> <term>identifier-list</term> <quoted>}</quoted></alt>
+    <alt><term>identifier</term> <quoted>.*</quoted></alt>
+</grammar>
+
+<grammar term="static-method-decl">
+    <alt><quoted>static</quoted> <term>func-decl</term></alt>
+</grammar>
+
+<grammar term="method-decl">
+    <alt><term>func-decl</term></alt>
+</grammar>
+
+<grammar term="mixin">
+    <alt><term>identifier</term></alt>
+</grammar>
+
+<para>
+The record name defined by the <grammarterm>ident</grammarterm> in <grammarterm>record-header</grammarterm> is inserted into scope of the module in which is it was declared.
+It is also inserted into the scope of the record itself.
+This permits the record to be self-referenced as a field, see <grammarterm>type</grammarterm> of <grammarterm>fields-decl</grammarterm>.
+</para>
+</section>
+
+<section title="Interface declaration">
+<para>
+An interface is a named &lt;&lt;record-type,record type&gt;&gt;.
+They are declared with the <literal>interface</literal> keyword.
+</para>
+
+<grammar term="interface-decl">
+    <alt><quoted>interface</quoted> <term>interface-header</term> <quoted>{</quoted> <term>interface-body</term> <quoted>}</quoted></alt>
+</grammar>
+
+<grammar term="interface-header">
+    <alt><term>identifier</term> <term>type-params</term></alt>
+    <alt><term>identifier</term></alt>
+</grammar>
+
+<grammar term="interface-body">
+    <alt><term>field-decl</term></alt>
+    <alt><term>func-prefix</term></alt>
+    <alt><term>static-method-decl</term></alt>
+    <alt><term>mixin</term></alt>
+</grammar>
+
+<para>
+Interfaces can be instantiated so long as there is an inline implementation provided for each method at the call site.
+See &lt;&lt;object-instantiation,object instantiation&gt;&gt;.
+</para>
+
+<para>
+Unlike a record type, an interface can mixin the contents of one or more interfaces.
+</para>
+
+<para>
+The primary difference between an interface and a struct is the former can be mixed and the latter can embed fields.
+</para>
+</section>
+
+<section title="Struct declaration">
+<para>
+A struct is a named &lt;&lt;record-type,record type&gt;&gt; declared on a the stack instead of the heap. Structs cannot mixin interfaces and they do not allow embedding.
+They are _nominally typed_.
+</para>
+</section>
+</chapter>

@@ -1,0 +1,458 @@
+<chapter title="Statements" id="statements">
+<index term="statements">
+
+<para>
+In Gear, there are three kinds of statements: simple statements, compiler control statements, and control flow statements.
+Simple statements are the most common and consist of either an expression or a declaration.
+Compiler control statements allow the program to change aspects of the compiler’s behavior and include a conditional compilation block and a line control statement.
+</para>
+
+<para>
+Control flow statements are used to control the flow of execution in a program.
+There are several types of control flow statements in Swift, including loop statements, branch statements, and control transfer statements.
+Loop statements allow a block of code to be executed repeatedly, branch statements allow a certain block of code to be executed only when certain conditions are met,
+and control transfer statements provide a way to alter the order in which code is executed.
+In addition, Gear provides a defer statement for running cleanup actions just before the current scope exits.
+</para>
+
+<grammar term="statement">
+    <alt><term>selection-statement</term></alt>
+    <alt><term>control-statement</term></alt>
+</grammar>
+
+<para>
+A semicolon (;) can optionally appear after any statement and is used to separate multiple statements if they appear on the same line.
+</para>
+
+<section title="Selection statements">
+<para>
+Selection statements allow the program to execute certain blocks of code depending on the value of one or more conditions.
+The values of the conditions specified in a selection statement control how the program branches and, therefore, what block of code is executed.
+Gear has two selection statements: an <literal>if</literal> statement and a <literal>switch</literal> statement.
+</para>
+
+<grammar term="selection-statement">
+    <alt><term>if-statement</term></alt>
+    <alt><term>switch-statement</term></alt>
+</grammar>
+
+<section title="If statement">
+<para>
+“If” statements specify the conditional execution of two blocks according to the value of a boolean expression.
+If the expression evaluates to bold{true}, the “if” block is executed, otherwise, if present, the “else” block is executed.
+</para>
+
+<para>
+If the “if” statement is of the form <literal>if var</literal>, then conditional execution is determined by whether the variables are non-null.
+A variable declared with an explicit type annotation is matched according to the <ref id="pattern-matching">pattern matching</ref> rules.
+</para>
+
+<grammar term="if-statement">
+    <alt><quoted>if</quoted> <term>expression</term> <term>block</term> <opt-term>else-block</opt-term></alt>
+    <alt><quoted>if</quoted> <quoted>var</quoted> <term>variable-pattern</term> <term>block</term> <opt-term>else-block</opt-term></alt>
+</grammar>
+
+<grammar term="else-block">
+    <alt><quoted>else</quoted> <term>if-statement</term></alt>
+    <alt><quoted>else</quoted> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>if</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>true</literal>, control is transferred to <grammarterm>block</grammarterm>.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>false</literal>, control is transferred to the optional <literal>else</literal> which may be another “if” statement or the “else” block.
+    </li>
+</ul>
+</section>
+
+<section title="Switch statement">
+<para>
+“Switch” statements provide multi-way execution.
+An expression or type is compared to the &quot;cases&quot; inside the &quot;switch&quot; to determine which branch to execute.
+If no case matches and there is a &quot;default&quot; case, its statements are executed.
+There can be at most one default case and it may appear anywhere in the &quot;switch&quot; statement.
+</para>
+
+<grammar term="switch-statement">
+    <alt><quoted>switch</quoted> <term>expression</term> <opt-term>switch-case-sequence</opt-term></alt>
+</grammar>
+
+<grammar term="switch-case-sequence">
+    <alt><term>switch-case</term></alt>
+    <alt><term>switch-case</term> <term>switch-case-sequence</term></alt>
+</grammar>
+
+<grammar term="switch-case">
+    <alt><quoted>case</quoted> <term>expression</term> <quoted>:</quoted> <term>block</term></alt>
+    <alt><quoted>default</quoted> <quoted>:</quoted> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>switch</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The switch <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If the switch <grammarterm>expression</grammarterm> yields a value that matches a case <grammarterm>expression</grammarterm>, control is transferred to its <grammarterm>block</grammarterm>.
+    </li>
+    <li>
+If the switch <grammarterm>expression</grammarterm> yields a value that does not match any case <grammarterm>expression</grammarterm>, control is transferred to the optional <literal>default</literal>.
+If there is no optional <literal>default</literal>, control is transferred to the end point of the <literal>switch</literal> statement.</li>
+</ul>
+</section>
+</section>
+
+<section title="Iteration statement">
+<para>
+Iteration statements repeatedly execute a block.
+</para>
+
+<grammar term="iteration-statement">
+    <alt><term>while-statement</term></alt>
+    <alt><term>do-statement</term></alt>
+    <alt><term>for-statement</term></alt>
+</grammar>
+
+<section title="While statement">
+<para>
+The “while” statement conditionally executes a block zero or more times.
+</para>
+
+<grammar term="while-statement">
+    <alt><quoted>while</quoted> <term>expression</term> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>while</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>true</literal>, control is transferred to the <grammarterm>block</grammarterm>.
+When and if control reaches the end point of the block (possibly from execution of a continue statement), control is transferred to the beginning of the <literal>while</literal> statement.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields <literal>false</literal>, control is transferred to the end point of the <literal>while</literal> statement.
+    </li>
+</ul>
+
+<para>
+Within the <grammarterm>block</grammarterm> of a <literal>while</literal> statement, a <literal>break</literal> statement may be used to transfer control to the end point of the <literal>while</literal>
+statement (thus ending iteration of the <grammarterm>block</grammarterm>), and a <literal>continue</literal> statement may be used to transfer control to the end point of the <grammarterm>block</grammarterm>
+statement (thus performing another iteration of the <literal>while</literal> statement).
+</para>
+</section>
+
+<section title="Do statement">
+<para>
+The “do” statement conditionally executes a block zero or more times.
+</para>
+
+<grammar term="do-statement">
+    <alt><quoted>do</quoted> <term>block</term> <quoted>while</quoted> <term>expression</term></alt>
+</grammar>
+
+<para>
+A <literal>do</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+Control is transferred to the <grammarterm>block</grammarterm>.
+    </li>
+    <li>
+When and if control reaches the end point of the <grammarterm>block</grammarterm> (possibly from execution of a <literal>continue</literal> statement), the <grammarterm>expression</grammarterm>is evaluated.
+If the <grammarterm>expression</grammarterm> yields <literal>true</literal>, control is transferred to the beginning of the <literal> do</literal> statement. Otherwise, control is transferred to the
+end point of the <literal>do</literal> statement.
+    </li>
+    <li>
+Within the <grammarterm>block</grammarterm> of a <literal>do</literal>statement, a <literal>break</literal> statement may be used to transfer control to the end point of the <literal>do</literal>
+statement (thus ending iteration of the <grammarterm>block</grammarterm>), and a <literal>continue</literal> statement may be used to transfer control to the end point of the <grammarterm>block</grammarterm>
+(thus performing another iteration of the <literal>do</literal> statement).
+    </li>
+</ul>
+</section>
+
+<section title="For statement">
+<para>
+The “for” statement executes a block of code for any object that conforms to the <literal>Sequence</literal> protocol.
+</para>
+
+<grammar term="for-statement">
+    <alt><quoted>for</quoted> <term>identifier</term> <quoted>in</quoted> <term>expression</term> <term>block</term></alt>
+</grammar>
+
+<para>
+A <literal>for</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The <grammarterm>expression</grammarterm> is evaluated.
+    </li>
+    <li>
+If <grammarterm>expression</grammarterm> yields an iterator object conforming to the <literal>Sequence</literal> protocol, control is transferred to the <literal>next()</literal> method of the iterator object.
+If the value returned by <literal>next()</literal> isn’t <grammarterm>nil</grammarterm>, it’s assigned to the <grammarterm>identifier</grammarterm> pattern and control is transferred to the <grammarterm>block</grammarterm>.
+If the value returned by <literal>next()</literal> is <grammarterm>nil</grammarterm>, control is transferred to the end point of the <literal>for</literal> statement.
+    </li>
+    <li>
+When and if control reaches the end point of the <grammarterm>block</grammarterm> (possibly from execution of a <literal>continue</literal> statement), the <literal>next()</literal>
+method of the iterator object is evaluated again (thus performing another iteration of the <literal>for</literal> statement).
+    </li>
+</ul>
+</section>
+</section>
+
+<section title="Jump statements">
+<para>
+Jump statements unconditionally transfer control.
+</para>
+
+<grammar term="jump-statement">
+    <alt><term>break-statement</term></alt>
+    <alt><term>continue-statement</term></alt>
+    <alt><term>return-statement</term></alt>
+</grammar>
+
+<para>
+The location to which a jump statement transfers control is called the <italic>target</italic> of the jump statement
+</para>
+
+<para>
+When a jump statement occurs within a <ref id="block">block</ref>, and the target of that jump statement is outside that block, the jump statement is said to <italic>exit</italic> the block.
+While a jump statement may transfer control out of a block, it can never transfer control into a block.
+</para>
+
+<section title="Break statement">
+<para>
+The “break” statement exits the nearest enclosing <literal>switch</literal>, <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statement.
+</para>
+
+<grammar term="jump-statement">
+    <alt><quoted>break</quoted> <quoted>;</quoted></alt>
+</grammar>
+
+<para>
+The target of a <literal>break</literal> statement is the end point of the nearest enclosing <literal>switch</literal>, <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statement.
+If a <literal>break</literal> statement is not enclosed by a <literal>switch</literal>, <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statement, a compile-time error occurs.
+</para>
+
+<para>
+When multiple <literal>switch</literal>, <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statements are nested within
+each other, a <literal>break</literal>statement applies only to the innermost statement.
+</para>
+
+<para>
+A <literal>break</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>Control is transferred to the target of the <literal>break</literal>
+        statement.</li>
+</ul>
+
+<para>
+Because a <literal>break</literal> statement unconditionally transfers control elsewhere, the end point of a <literal>break</literal> statement is never reachable.
+</para>
+</section>
+
+<section title="Continue statement">
+<para>
+The “continue” statement starts a new iteration of the nearest enclosing <literal>switch</literal>, <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statement.
+</para>
+
+<grammar term="continue-statement">
+    <alt><quoted>continue</quoted> <quoted>;</quoted></alt>
+</grammar>
+
+<para>
+The target of a <literal>continue</literal> statement is the end point of the <ref id="block">block</ref> statement of the nearest enclosing <literal>while</literal>, <literal>do</literal>, or <literal>
+for</literal> statement. If a <literal>continue</literal> statement is not enclosed by a <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statement, a compile-time error occurs.
+</para>
+
+<para>
+When multiple <literal>while</literal>, <literal>do</literal>, or <literal>for</literal> statements are nested within each other, a <literal>continue</literal>statement applies only to the innermost statement.
+</para>
+
+<para>
+A <literal>continue</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+Control is transferred to the target of the <literal>continue</literal> statement.
+    </li>
+</ul>
+
+<para>
+Because a <literal>continue</literal> statement unconditionally transfers control elsewhere, the end point of a <literal>continue</literal> statement is never reachable.
+</para>
+</section>
+
+<section title="Return statement">
+<para>
+The “return” statement returns control to the caller of the function member in which the <literal>return</literal> statement appears.
+</para>
+
+<grammar term="return-statement">
+    <alt><quoted>return</quoted> <opt-term>expression</opt-term> <quoted>;</quoted></alt>
+</grammar>
+
+<para>
+A <literal>return</literal> statement with no <grammarterm>expression</grammarterm> can be used only in a function that does not compute a value; that is, a function with the return type <literal>void</literal>.
+</para>
+
+<para>
+A <literal>return</literal> statement with an <grammarterm>expression</grammarterm> can only be used in a function that computes a value; that is, a function with a non-void return type.
+</para>
+
+<para>
+A <literal>return</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+If the <literal>return</literal> statement specifies an <grammarterm>expression</grammarterm>, the expression is evaluated and the resulting value is converted to the return type of the
+containing function member by an implicit conversion.
+The result of the conversion becomes the value returned to the caller.
+    </li>
+    <li>
+Control is returned to the caller of the containing function member.
+    </li>
+</ul>
+
+<para>
+Because a <literal>return</literal> statement unconditionally transfers control elsewhere, the end point of a <literal>return</literal> statement is never reachable.
+</para>
+</section>
+</section>
+
+<section title="Defer statements">
+<para>
+A “defer” statement evaluates an <grammarterm>expression</grammarterm> or <grammarterm>block</grammarterm> whose execution is deferred to the moment the enclosing <ref id="block">block</ref> exits, either because
+the enclosing block executed a <literal>return</literal> statement, a <literal>break</literal> statement, a <literal>continue</literal> statement, or control reached the end of its block, or because the corresponding
+thread panicked.
+</para>
+
+<grammar term="defer-statement">
+    <alt><quoted>defer</quoted> <term>expression</term> <quoted>;</quoted></alt>
+    <alt><quoted>defer</quoted> <term>block</term> <quoted>;</quoted></alt>
+</grammar>
+
+<para>
+A <literal>defer</literal> statement is executed as follows:
+</para>
+
+<ul>
+    <li>
+The <literal>defer</literal> statement is executed the moment the enclosing <ref id="block">block</ref> exits.
+    </li>
+    <li>
+If there is more than one <literal>defer</literal> statement in the enclosing <grammarterm>block</grammarterm>, they are evaluated in the reverse order of their position in the source code.
+    </li>
+    <li>
+If control never reaches the <literal>defer</literal> statement, then the <grammarterm>expression</grammarterm> or <grammarterm>block</grammarterm> is not executed.
+    </li>
+</ul>
+
+<para>
+If a <grammarterm>block</grammarterm> contains a <grammarterm>return</grammarterm> statement, then a compile-time error occurs.
+</para>
+</section>
+
+<section title="Use statements">
+<para>
+A “use” statement facilitate the use of modules, types, and variables defined in other modules.
+</para>
+
+<grammar term="use-statement">
+    <alt><quoted>use</quoted> <term>full-module-name</term> <quoted>.*</quoted></alt>
+    <alt><quoted>use</quoted> <term>full-module-name</term></alt>
+</grammar>
+
+<grammar term="module-member-list">
+    <alt><term>module-member</term> <quoted>,</quoted> <term>module-member-list</term></alt>
+    <alt><term>module-member</term></alt>
+</grammar>
+
+<grammar term="module-member">
+    <alt><term>identifier</term> <quoted>as</quoted> <term>identifier</term></alt>
+    <alt><term>identifier</term></alt>
+</grammar>
+
+<grammar term="full-module-name">
+    <alt><term>identifier</term> <quoted>.</quoted> <term>full-module-name</term></alt>
+    <alt><term>identifier</term></alt>
+</grammar>
+</section>
+
+<section title="Compiler control statements">
+<index term="compiler control statements">
+
+<para>
+A compiler control statement allow the program to change aspects of the compiler’s behavior.
+Gear has three compiler control statements: a conditional compilation block, a warning and error control statements.
+</para>
+
+<grammar term="control-statement">
+    <alt><quoted>conditional-control</quoted></alt>
+    <alt><quoted>warning-control</quoted></alt>
+    <alt><quoted>error-control</quoted></alt>
+</grammar>
+
+<grammar term="conditional-control">
+    <alt><quoted>#if</quoted></alt>
+    <alt><quoted>#elif</quoted></alt>
+    <alt><quoted>#else</quoted></alt>
+    <alt><quoted>#endif</quoted></alt>
+</grammar>
+
+<grammar term="warning-control">
+    <alt><quoted>#warning</quoted> <term>string-literal</term></alt>
+</grammar>
+
+<grammar term="warning-control">
+    <alt><quoted>#error</quoted> <term>string-literal</term></alt>
+</grammar>
+
+<section title="Conditional compilation block">
+<index term="conditional compilation block">
+<para>
+Every conditional compilation block begins with the <literal>#if</literal> compilation directive and ends with the <literal>#endif</literal> compilation directive.
+A simple conditional compilation block has the following form:
+</para>
+
+<grammar term="cc-block">
+    <alt><quoted>#if</quoted> <term>compiler-condition</term> <term>terminator</term> <term>statements</term> <term>terminator</term> <quoted>#endif</quoted></alt>
+</grammar>
+
+<para>
+Unlike the condition of an <literal>if</literal> statement, the compilation condition is evaluated at compile time.
+As a result, the statements are compiled and executed only if the compilation condition evaluates to true at compile time.
+Tokens enclosed by a conditional compilation block are either included or excluded from compilation depending upon whether the condition is true or false, respectivly.
+Tokens excluded from compilation are eneither parsed nor semanticly analyzied, and no diagnostic message are generated for them.
+</para>
+
+</index>
+</section>
+
+</index>
+</section>
+
+</index>
+</chapter>

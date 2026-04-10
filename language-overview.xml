@@ -1,0 +1,39 @@
+<chapter title="Language Overview">
+<informative>
+
+<para>
+Gear is a simple and small, type-safe, procedural programming language.
+Its syntax will be immediately familair to anyone with a background with C family programming language.
+Its small size is designed to mirror that of other small languages, like Lua and Go.
+</para>
+
+<para>
+The rest of this chapter describes the essential features of the language.
+While later chapters describe rules and exceptions using formal language, this chapter strives for clarity and brevity at the expense of completeness.
+The intent is to provide the reader with an introduction to the language that will facilitate the writing of early programs and the reading of later chapters.
+</para>
+
+<section title="Getting started">
+<para>
+The canonical “hello, world” program can be written as follows:
+</para>
+
+<code>use std.io
+
+module main
+
+func main() {
+    io.print(&quot;Hello, World!&quot;)
+}</code>
+
+<para>
+Close examination of this program is illuminating:
+</para>
+
+<ul>
+    <li>The <literal>use std.io</literal> directive references the submodule <literal>io</literal> of the global module <literal>std</literal>.</li>
+</ul>
+</section>
+
+</informative>
+</chapter>
