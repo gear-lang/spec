@@ -659,7 +659,8 @@ The type of an <grammarterm>nil-literal</grammarterm> represents the absence of 
 <index term="terminators">
 
 <para>
-Terminators delimit productions. Line terminators are commonly added to improve readability.
+Terminators delimit productions.
+Line terminators are commonly added to improve readability.
 Semicolon terminators terminates are useful for termining multiple statements on the same line.
 </para>
 
