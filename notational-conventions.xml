@@ -25,7 +25,8 @@ For example:
 
 <para>
 Alternatives are normally listed on separate lines though in cases where there are many alternatives, the phrase “one of” precedes a list of the options.
-This is simply shorthand for listing each of the alternatives on a separate line. For example:
+This is simply shorthand for listing each of the alternatives on a separate line.
+For example:
 </para>
 
 <grammar term="decimal-digit" example="true">
